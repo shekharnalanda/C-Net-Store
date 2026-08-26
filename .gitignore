@@ -1,0 +1,12 @@
+/backend/.env
+/backend/vendor/
+/backend/node_modules/
+/backend/storage/*.key
+/apps/**/.dart_tool/
+/apps/**/build/
+/apps/**/.flutter-plugins*
+*.jks
+*.keystore
+key.properties
+.DS_Store
+
