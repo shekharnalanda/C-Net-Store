@@ -14,6 +14,8 @@ use Illuminate\Validation\ValidationException;
 
 class CheckoutService
 {
+    public function __construct(private readonly InventoryReservationService $inventory) {}
+
     public function createOrder(Cart $cart, Address $address, int $outletId, string $fulfilmentType, ?string $note = null): Order
     {
         if (config('store.cod_enabled', false)) {
@@ -62,6 +64,8 @@ class CheckoutService
                 $order->items()->create(['product_id' => $product->id, 'product_name' => $product->name, 'sku' => $product->sku, 'unit_price' => $price, 'quantity' => $item->quantity, 'tax_rate' => $product->tax_rate, 'tax_amount' => $tax, 'line_total' => $lineSubtotal + $tax]);
             }
 
+            $this->inventory->reserve($order);
+
             $order->payments()->create(['provider' => 'razorpay', 'status' => PaymentStatus::Created, 'amount' => $order->grand_total, 'currency' => 'INR', 'idempotency_key' => (string) Str::uuid()]);
             $cart->update(['status' => 'checked_out']);
 
@@ -69,4 +73,3 @@ class CheckoutService
         });
     }
 }
-
