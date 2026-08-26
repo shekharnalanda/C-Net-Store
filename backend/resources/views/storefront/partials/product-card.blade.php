@@ -1,0 +1,2 @@
+<article class="product-card"><a href="{{ route('products.show', $product) }}"><div class="product-image">{{ $product->product_type === 'food' ? '🍲' : ($product->product_type === 'grocery' ? '🥦' : '📦') }}</div><div class="product-info"><small>{{ $product->business->name ?? 'C-Net Store' }}</small><h3>{{ $product->name }}</h3><div class="price"><strong>₹{{ number_format($product->sale_price ?? $product->price, 2) }}</strong>@if($product->sale_price)<del>₹{{ number_format($product->price, 2) }}</del>@endif</div><span class="add">View Details</span></div></a></article>
+

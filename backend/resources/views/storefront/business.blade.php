@@ -1,0 +1,4 @@
+@extends('layouts.storefront')
+@section('title', $business->name.' | C-Net Store')
+@section('content')<section class="store-hero"><div class="container"><div class="store-avatar">🏪</div><div><span>Verified C-Net Store Partner</span><h1>{{ $business->name }}</h1><p>{{ ucfirst(str_replace('_',' ', $business->type->value ?? $business->type)) }} • Bihar Sharif • Online payment</p></div></div></section><section class="section container"><div class="section-head"><h2>Available Products</h2><span>{{ $products->total() }} items</span></div><div class="product-grid">@forelse($products as $product) @include('storefront.partials.product-card', ['product' => $product]) @empty <div class="empty">This store is preparing its catalogue.</div>@endforelse</div><div class="pagination">{{ $products->links() }}</div></section>@endsection
+
