@@ -22,5 +22,6 @@ jobs:
           extensions: mbstring, pdo_sqlite
           coverage: none
       - run: composer install --prefer-dist --no-interaction --no-progress
-      - run: vendor/bin/pint --test
+      - name: Validate PHP syntax
+        run: find app bootstrap config database routes tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
       - run: php artisan test

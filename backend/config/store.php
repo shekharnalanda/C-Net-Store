@@ -5,5 +5,5 @@ return [
     'launch_city' => env('STORE_CITY', 'Bihar Sharif'),
     'currency' => 'INR',
     'payment_provider' => 'razorpay',
+    'admin_email' => env('ADMIN_EMAIL'),
 ];
-

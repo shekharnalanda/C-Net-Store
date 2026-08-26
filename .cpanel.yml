@@ -13,4 +13,5 @@ deployment:
     - cd $APPPATH && /opt/cpanel/ea-php83/root/usr/bin/php artisan storage:link || true
     - cd $APPPATH && /opt/cpanel/ea-php83/root/usr/bin/php artisan optimize:clear
     - cd $APPPATH && /opt/cpanel/ea-php83/root/usr/bin/php artisan optimize
-    - cd $APPPATH && /opt/cpanel/ea-php83/root/usr/bin/php artisan store:status
+    - cd $APPPATH && /opt/cpanel/ea-php83/root/usr/bin/php artisan store:preflight --production
+    - cd $APPPATH && /bin/bash scripts/smoke.sh https://cnetstore.mciedu.com

@@ -18,6 +18,8 @@
    * * * * * cd /home4/mcied45x/repositories/C-Net-Store/backend && /opt/cpanel/ea-php83/root/usr/bin/php artisan queue:work --stop-when-empty --tries=3 --timeout=90 >> /dev/null 2>&1
    ```
 
+The deployment finishes by running `php artisan store:preflight --production` and `scripts/smoke.sh`. Deployment is marked failed if database, security, payment configuration or public endpoints are not ready.
+
 ## Go-live checks
 
 - `APP_ENV=production`, `APP_DEBUG=false`, HTTPS and valid `APP_KEY`.
