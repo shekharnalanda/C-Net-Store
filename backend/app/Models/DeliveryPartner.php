@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ApprovalStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DeliveryPartner extends Model
 {
@@ -19,5 +20,8 @@ class DeliveryPartner extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function assignments(): HasMany { return $this->hasMany(DeliveryAssignment::class); }
+    public function earnings(): HasMany { return $this->hasMany(DeliveryEarning::class); }
 }
 
