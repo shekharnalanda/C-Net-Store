@@ -16,7 +16,7 @@ class CheckoutService
 {
     public function __construct(private readonly InventoryReservationService $inventory) {}
 
-    public function createOrder(Cart $cart, Address $address, int $outletId, string $fulfilmentType, ?string $note = null): Order
+    public function createOrder(Cart $cart, Address $address, int $outletId, string $fulfilmentType, ?string $note = null, ?string $couponCode = null): Order
     {
         if (config('store.cod_enabled', false)) {
             throw ValidationException::withMessages(['payment_method' => ['Cash on Delivery is not supported.']]);
@@ -26,7 +26,7 @@ class CheckoutService
         throw_if($cart->business->status !== ApprovalStatus::Approved, ValidationException::withMessages(['cart' => ['This store is not available.']]));
         throw_if($cart->items->isEmpty(), ValidationException::withMessages(['cart' => ['The cart is empty.']]));
 
-        return DB::transaction(function () use ($cart, $address, $outletId, $fulfilmentType, $note): Order {
+        return DB::transaction(function () use ($cart, $address, $outletId, $fulfilmentType, $note, $couponCode): Order {
             $subtotal = 0;
             $taxTotal = 0;
             foreach ($cart->items as $item) {
@@ -38,6 +38,8 @@ class CheckoutService
                 $taxTotal += round($lineSubtotal * ((float) $product->tax_rate / 100), 2);
             }
 
+            $couponResult = $couponCode ? app(CouponService::class)->calculate($couponCode, $cart->user, $cart->business_id, $subtotal) : null;
+            $discountTotal = $couponResult['discount'] ?? 0.00;
             $deliveryFee = 0.00;
             $platformFee = 0.00;
             $order = Order::create([
@@ -46,13 +48,16 @@ class CheckoutService
                 'business_id' => $cart->business_id,
                 'outlet_id' => $outletId,
                 'address_id' => $address->id,
+                'coupon_id' => $couponResult['coupon']->id ?? null,
+                'coupon_code' => $couponResult['coupon']->code ?? null,
                 'status' => OrderStatus::PaymentPending,
                 'fulfilment_type' => $fulfilmentType,
                 'subtotal' => $subtotal,
                 'tax_total' => $taxTotal,
                 'delivery_fee' => $deliveryFee,
                 'platform_fee' => $platformFee,
-                'grand_total' => round($subtotal + $taxTotal + $deliveryFee + $platformFee, 2),
+                'discount_total' => $discountTotal,
+                'grand_total' => round($subtotal - $discountTotal + $taxTotal + $deliveryFee + $platformFee, 2),
                 'customer_note' => $note,
             ]);
 
@@ -65,6 +70,8 @@ class CheckoutService
             }
 
             $this->inventory->reserve($order);
+
+            if ($couponResult) $couponResult['coupon']->redemptions()->create(['user_id' => $cart->user_id, 'order_id' => $order->id, 'discount_amount' => $discountTotal, 'redeemed_at' => now()]);
 
             $order->payments()->create(['provider' => 'razorpay', 'status' => PaymentStatus::Created, 'amount' => $order->grand_total, 'currency' => 'INR', 'idempotency_key' => (string) Str::uuid()]);
             $cart->update(['status' => 'checked_out']);

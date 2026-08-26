@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Customer\AddressController;
 use App\Http\Controllers\Api\Customer\CartController;
 use App\Http\Controllers\Api\Customer\CheckoutController;
 use App\Http\Controllers\Api\Customer\PaymentController;
+use App\Http\Controllers\Api\Customer\CancellationController;
 
 Route::get('/catalog', fn () => response()->json(['data' => []]));
 
@@ -16,4 +17,5 @@ Route::middleware(['auth:sanctum', 'role:customer'])->group(function (): void {
     Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:10,1');
     Route::post('/orders/{order}/payment', [PaymentController::class, 'create'])->middleware('throttle:10,1');
     Route::post('/orders/{order}/payment/verify', [PaymentController::class, 'verify'])->middleware('throttle:20,1');
+    Route::post('/orders/{order}/cancel', [CancellationController::class, 'store'])->middleware('throttle:10,1');
 });

@@ -15,12 +15,11 @@ class CheckoutController extends Controller
 {
     public function store(Request $request, CheckoutService $checkout): JsonResponse
     {
-        $data = $request->validate(['cart_id' => ['required', 'exists:carts,id'], 'address_id' => ['required', 'exists:addresses,id'], 'outlet_id' => ['required', 'exists:outlets,id'], 'payment_method' => ['required', Rule::in(['upi', 'card', 'netbanking', 'wallet'])], 'fulfilment_type' => ['required', Rule::in(['cnet_delivery', 'seller_delivery'])], 'customer_note' => ['nullable', 'string', 'max:500']]);
+        $data = $request->validate(['cart_id' => ['required', 'exists:carts,id'], 'address_id' => ['required', 'exists:addresses,id'], 'outlet_id' => ['required', 'exists:outlets,id'], 'payment_method' => ['required', Rule::in(['upi', 'card', 'netbanking', 'wallet'])], 'fulfilment_type' => ['required', Rule::in(['cnet_delivery', 'seller_delivery'])], 'customer_note' => ['nullable', 'string', 'max:500'], 'coupon_code' => ['nullable', 'string', 'max:50']]);
         $cart = Cart::query()->where('user_id', $request->user()->id)->where('status', 'active')->findOrFail($data['cart_id']);
         $address = Address::query()->where('user_id', $request->user()->id)->findOrFail($data['address_id']);
         Outlet::query()->where('business_id', $cart->business_id)->where('status', 'approved')->findOrFail($data['outlet_id']);
-        $order = $checkout->createOrder($cart, $address, $data['outlet_id'], $data['fulfilment_type'], $data['customer_note'] ?? null);
+        $order = $checkout->createOrder($cart, $address, $data['outlet_id'], $data['fulfilment_type'], $data['customer_note'] ?? null, $data['coupon_code'] ?? null);
         return response()->json(['message' => 'Online payment is required to confirm this order.', 'data' => $order], 201);
     }
 }
-
