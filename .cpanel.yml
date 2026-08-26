@@ -1,0 +1,16 @@
+deployment:
+  tasks:
+    - export APPPATH=/home4/mcied45x/repositories/C-Net-Store/backend
+    - /bin/mkdir -p $APPPATH/storage/app/public
+    - /bin/mkdir -p $APPPATH/storage/framework/cache/data
+    - /bin/mkdir -p $APPPATH/storage/framework/sessions
+    - /bin/mkdir -p $APPPATH/storage/framework/views
+    - /bin/mkdir -p $APPPATH/storage/logs
+    - /bin/chmod -R ug+rwX $APPPATH/storage $APPPATH/bootstrap/cache
+    - cd $APPPATH && /opt/cpanel/composer/bin/composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+    - cd $APPPATH && /opt/cpanel/ea-php83/root/usr/bin/php artisan migrate --force
+    - cd $APPPATH && /opt/cpanel/ea-php83/root/usr/bin/php artisan db:seed --class=CoreRoleSeeder --force
+    - cd $APPPATH && /opt/cpanel/ea-php83/root/usr/bin/php artisan storage:link || true
+    - cd $APPPATH && /opt/cpanel/ea-php83/root/usr/bin/php artisan optimize:clear
+    - cd $APPPATH && /opt/cpanel/ea-php83/root/usr/bin/php artisan optimize
+    - cd $APPPATH && /opt/cpanel/ea-php83/root/usr/bin/php artisan store:status

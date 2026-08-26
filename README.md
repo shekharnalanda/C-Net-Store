@@ -8,3 +8,5 @@ Multi-vendor e-commerce, grocery and food-delivery platform launching in Bihar S
 - Payments: Online only; Cash on Delivery is disabled
 
 See `docs/PROJECT_SCOPE.md` and `docs/ARCHITECTURE.md` for the approved scope and repository structure.
+
+Production setup and BigRock cPanel instructions are documented in `docs/DEPLOYMENT.md`.

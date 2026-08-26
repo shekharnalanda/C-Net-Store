@@ -1,8 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('store:status', function (): void {
     $this->info('C-Net Store is configured.');
 });
 
+Schedule::command('store:release-expired-reservations')->everyFiveMinutes()->withoutOverlapping();
+Schedule::command('queue:prune-failed --hours=168')->daily();
+Schedule::command('sanctum:prune-expired --hours=24')->daily();
