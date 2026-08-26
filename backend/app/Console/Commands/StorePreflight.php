@@ -42,7 +42,7 @@ class StorePreflight extends Command
             Artisan::call('migrate:status');
             $this->pass('Migration table available');
         } catch (Throwable $exception) {
-            $this->fail('Database connection/migrations', $exception->getMessage());
+            $this->failCheck('Database connection/migrations', $exception->getMessage());
         }
 
         $this->check('Razorpay key configured', ! $production || filled(config('services.razorpay.key_id')));
@@ -67,7 +67,7 @@ class StorePreflight extends Command
 
     private function check(string $label, bool $passed, ?string $detail = null): void
     {
-        $passed ? $this->pass($label, $detail) : $this->fail($label, $detail);
+        $passed ? $this->pass($label, $detail) : $this->failCheck($label, $detail);
     }
 
     private function pass(string $label, ?string $detail = null): void
@@ -75,7 +75,7 @@ class StorePreflight extends Command
         $this->line('<fg=green>PASS</> '.$label.($detail ? " ({$detail})" : ''));
     }
 
-    private function fail(string $label, ?string $detail = null): void
+    private function failCheck(string $label, ?string $detail = null): void
     {
         $this->failures++;
         $safeDetail = $detail ? mb_substr(preg_replace('/password=[^ ]+/i', 'password=[hidden]', $detail), 0, 180) : null;
