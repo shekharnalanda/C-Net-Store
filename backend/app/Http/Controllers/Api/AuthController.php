@@ -6,6 +6,7 @@ use App\Enums\ApprovalStatus;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\DeliveryPartner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -30,6 +31,10 @@ class AuthController extends Controller
             ...$data,
             'status' => $role === UserRole::Customer ? ApprovalStatus::Approved : ApprovalStatus::Pending,
         ]);
+
+        if ($role === UserRole::DeliveryPartner) {
+            DeliveryPartner::create(['user_id' => $user->id, 'status' => ApprovalStatus::Pending, 'is_online' => false]);
+        }
 
         return response()->json([
             'message' => $role === UserRole::Customer ? 'Registration successful.' : 'Registration submitted for approval.',
@@ -77,4 +82,3 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out successfully.']);
     }
 }
-

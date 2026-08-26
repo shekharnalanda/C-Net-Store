@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Admin\BusinessApprovalController;
 use App\Http\Controllers\Api\Admin\ProductApprovalController;
+use App\Http\Controllers\Api\Admin\DeliveryAssignmentController;
 
 Route::middleware(['auth:sanctum', 'role:super_admin,staff'])->group(function (): void {
     Route::get('/dashboard', fn () => response()->json(['status' => 'ready']));
@@ -10,5 +11,5 @@ Route::middleware(['auth:sanctum', 'role:super_admin,staff'])->group(function ()
     Route::patch('/businesses/{business}', [BusinessApprovalController::class, 'update']);
     Route::get('/products', [ProductApprovalController::class, 'index']);
     Route::patch('/products/{product}', [ProductApprovalController::class, 'update']);
+    Route::post('/orders/{order}/delivery-assignment', [DeliveryAssignmentController::class, 'store']);
 });
-

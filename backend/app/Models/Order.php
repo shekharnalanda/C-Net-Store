@@ -23,4 +23,6 @@ class Order extends Model
     public function items(): HasMany { return $this->hasMany(OrderItem::class); }
     public function payments(): HasMany { return $this->hasMany(PaymentTransaction::class); }
     public function inventoryReservations(): HasMany { return $this->hasMany(InventoryReservation::class); }
+    public function statusHistory(): HasMany { return $this->hasMany(OrderStatusHistory::class); }
+    public function deliveryAssignment(): \Illuminate\Database\Eloquent\Relations\HasOne { return $this->hasOne(DeliveryAssignment::class); }
 }
