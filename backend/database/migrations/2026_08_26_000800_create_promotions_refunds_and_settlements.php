@@ -17,8 +17,8 @@ return new class extends Migration {
             $table->decimal('minimum_order', 12, 2)->default(0);
             $table->unsignedInteger('usage_limit')->nullable();
             $table->unsignedInteger('per_user_limit')->default(1);
-            $table->timestamp('starts_at');
-            $table->timestamp('ends_at');
+            $table->dateTime('starts_at');
+            $table->dateTime('ends_at');
             $table->boolean('is_active')->default(true)->index();
             $table->timestamps();
         });
@@ -27,7 +27,7 @@ return new class extends Migration {
             $table->foreignId('coupon_id')->nullable()->after('address_id')->constrained()->nullOnDelete();
             $table->string('coupon_code')->nullable()->after('coupon_id');
             $table->text('cancellation_reason')->nullable();
-            $table->timestamp('cancelled_at')->nullable();
+            $table->dateTime('cancelled_at')->nullable();
         });
 
         Schema::create('coupon_redemptions', function (Blueprint $table): void {
@@ -36,7 +36,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained()->restrictOnDelete();
             $table->foreignId('order_id')->unique()->constrained()->restrictOnDelete();
             $table->decimal('discount_amount', 12, 2);
-            $table->timestamp('redeemed_at');
+            $table->dateTime('redeemed_at');
             $table->timestamps();
             $table->index(['coupon_id', 'user_id']);
         });
@@ -52,8 +52,8 @@ return new class extends Migration {
             $table->text('reason');
             $table->string('status')->default('requested')->index();
             $table->json('provider_payload')->nullable();
-            $table->timestamp('requested_at');
-            $table->timestamp('processed_at')->nullable();
+            $table->dateTime('requested_at');
+            $table->dateTime('processed_at')->nullable();
             $table->timestamps();
         });
 
@@ -71,8 +71,8 @@ return new class extends Migration {
             $table->decimal('net_payable', 14, 2);
             $table->string('status')->default('draft')->index();
             $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->timestamp('approved_at')->nullable();
-            $table->timestamp('paid_at')->nullable();
+            $table->dateTime('approved_at')->nullable();
+            $table->dateTime('paid_at')->nullable();
             $table->string('payment_reference')->nullable()->unique();
             $table->timestamps();
         });
