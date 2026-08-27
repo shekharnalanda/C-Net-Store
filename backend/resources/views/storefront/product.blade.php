@@ -12,7 +12,5 @@
 @if($related->isNotEmpty())<section class="section container"><div class="section-head"><h2>You may also like</h2></div><div class="product-grid">@foreach($related as $item) @include('storefront.partials.product-card', ['product' => $item]) @endforeach</div></section>@endif
 @endsection
 @push('scripts')
-<script>
-document.getElementById('add-to-cart')?.addEventListener('click',async function(){const status=document.getElementById('cart-status');if(!CNet.token){location.assign('/login?redirect='+encodeURIComponent(location.pathname));return;}this.disabled=true;status.className='form-status';status.textContent='Adding to cart…';try{const result=await CNet.api('/customer/cart/items',{method:'POST',body:JSON.stringify({product_id:Number(this.dataset.product),quantity:1})});localStorage.setItem('cnet_cart_id',result.data.cart_id);localStorage.setItem('cnet_outlet_id',this.dataset.outlet);localStorage.setItem('cnet_cart_count','1');CNet.updateHeader();status.className='form-status success';status.innerHTML='Added successfully. <a href="/cart"><strong>Open cart</strong></a>';}catch(error){status.className='form-status error';status.textContent=error.message;}finally{this.disabled=false;}});
-</script>
+<script src="{{ asset('js/storefront-product.js') }}" defer></script>
 @endpush
