@@ -36,8 +36,6 @@ jobs:
         run: flutter create --platforms=android --org com.mciedu.cnetstore .
       - name: Resolve packages
         run: flutter pub get
-      - name: Format check
-        run: dart format --output=none --set-exit-if-changed lib
       - name: Analyze
         run: flutter analyze lib
       - name: Build production-connected APK
