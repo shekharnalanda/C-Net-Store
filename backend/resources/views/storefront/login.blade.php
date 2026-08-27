@@ -8,6 +8,7 @@
 <label>Password<input id="login-password" type="password" autocomplete="current-password" required></label>
 <div id="login-status" class="form-status" aria-live="polite"></div>
 <button class="btn primary" type="submit">Login securely</button>
+<p><a href="/forgot-password">Forgot password?</a></p>
 </form><p class="muted">New customer registration is available in the C-Net Store mobile app.</p>
 </div></section>
 @endsection

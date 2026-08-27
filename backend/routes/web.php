@@ -31,3 +31,57 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('/logout', [AdminAuthController::class, 'destroy'])->name('logout');
     });
 });
+
+
+// Customer password recovery.
+Route::middleware('throttle:5,1')->group(function (): void {
+    Route::get('/forgot-password', function () {
+        return view('storefront.forgot-password');
+    });
+
+    Route::post('/forgot-password', function (\Illuminate\Http\Request $request) {
+        $data = $request->validate(['email' => ['required', 'email']]);
+        $user = \App\Models\User::query()->where('email', $data['email'])->first();
+
+        if ($user) {
+            $token = bin2hex(random_bytes(32));
+            \Illuminate\Support\Facades\DB::table('password_reset_tokens')->updateOrInsert(
+                ['email' => $user->email],
+                ['token' => \Illuminate\Support\Facades\Hash::make($token), 'created_at' => now()]
+            );
+            $url = url('/reset-password/'.$token).'?email='.urlencode($user->email);
+            \Illuminate\Support\Facades\Mail::raw(
+                "Use this secure link to reset your C-Net Store password. The link expires in 60 minutes.\n\n".$url,
+                fn ($message) => $message->to($user->email)->subject('Reset your C-Net Store password')
+            );
+        }
+
+        return back()->with('status', 'If this email is registered, a password reset link has been sent.');
+    });
+
+    Route::get('/reset-password/{token}', function (string $token, \Illuminate\Http\Request $request) {
+        return view('storefront.reset-password', ['token' => $token, 'email' => $request->query('email')]);
+    });
+
+    Route::post('/reset-password', function (\Illuminate\Http\Request $request) {
+        $data = $request->validate([
+            'token' => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)],
+        ]);
+        $record = \Illuminate\Support\Facades\DB::table('password_reset_tokens')->where('email', $data['email'])->first();
+        $valid = $record
+            && \Illuminate\Support\Facades\Hash::check($data['token'], $record->token)
+            && \Illuminate\Support\Carbon::parse($record->created_at)->greaterThan(now()->subMinutes(60));
+
+        if (! $valid) {
+            return back()->withErrors(['email' => 'This password reset link is invalid or has expired.'])->withInput($request->only('email'));
+        }
+
+        $user = \App\Models\User::query()->where('email', $data['email'])->firstOrFail();
+        $user->forceFill(['password' => \Illuminate\Support\Facades\Hash::make($data['password'])])->save();
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->where('email', $data['email'])->delete();
+
+        return redirect('/login')->with('status', 'Password changed successfully. Please login.');
+    });
+});
