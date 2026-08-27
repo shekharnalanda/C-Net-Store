@@ -12,11 +12,5 @@
 </div></section>
 @endsection
 @push('scripts')
-<script>
-document.getElementById('customer-login').addEventListener('submit',async function(event){
-event.preventDefault();const button=this.querySelector('button'),status=document.getElementById('login-status');button.disabled=true;status.className='form-status';status.textContent='Signing in…';
-try{const result=await CNet.api('/login',{method:'POST',body:JSON.stringify({login:document.getElementById('login-value').value.trim(),password:document.getElementById('login-password').value,device_name:'C-Net Store Website'})});if(result.user.role!=='customer')throw new Error('Please use a customer account on this website.');CNet.setSession(result.token,result.user);status.className='form-status success';status.textContent='Login successful.';const redirect=new URLSearchParams(location.search).get('redirect')||'/shop';location.assign(redirect.startsWith('/')?redirect:'/shop');}
-catch(error){status.className='form-status error';status.textContent=error.message;button.disabled=false;}
-});
-</script>
+<script src="{{ asset('js/storefront-login.js') }}" defer></script>
 @endpush
