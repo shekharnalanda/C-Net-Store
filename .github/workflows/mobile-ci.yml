@@ -1,0 +1,53 @@
+name: Mobile apps CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/**'
+      - '.github/workflows/mobile-ci.yml'
+  pull_request:
+    paths:
+      - 'apps/**'
+      - '.github/workflows/mobile-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    name: ${{ matrix.app }} Android
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [customer, seller, delivery]
+    defaults:
+      run:
+        working-directory: apps/${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Generate Android host project
+        run: flutter create --platforms=android --org com.mciedu.cnetstore .
+      - name: Resolve packages
+        run: flutter pub get
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed lib
+      - name: Analyze
+        run: flutter analyze lib
+      - name: Build production-connected APK
+        run: >-
+          flutter build apk --debug
+          --dart-define=API_BASE_URL=https://cnetstore.mciedu.com/api/v1
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: cnet-store-${{ matrix.app }}-debug-apk
+          path: apps/${{ matrix.app }}/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
