@@ -1,0 +1,74 @@
+name: Final Release Audit
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: final-release-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend quality and dependency audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_sqlite
+          coverage: none
+      - name: Validate dependency files
+        run: composer validate --strict
+      - name: Install locked dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Audit production dependencies
+        run: composer audit --locked --no-interaction
+      - name: Validate PHP syntax
+        run: find app bootstrap config database routes tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Run automated tests
+        run: php artisan test
+
+  production:
+    name: Production HTTPS and security audit
+    needs: backend
+    runs-on: ubuntu-latest
+    env:
+      STORE_URL: https://cnetstore.mciedu.com
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run public smoke tests
+        run: bash backend/scripts/smoke.sh "$STORE_URL"
+      - name: Verify storefront routes
+        run: |
+          set -euo pipefail
+          for path in / /shop /cart /admin/login /up /api/v1/health; do
+            status="$(curl --silent --show-error --location --output /dev/null --write-out '%{http_code}' "$STORE_URL$path")"
+            test "$status" = "200"
+            echo "PASS $path ($status)"
+          done
+      - name: Verify HTTP redirects to HTTPS
+        run: |
+          set -euo pipefail
+          headers="$(curl --silent --show-error --head http://cnetstore.mciedu.com/)"
+          echo "$headers"
+          echo "$headers" | grep -Eiq '^HTTP/.* 30[12]'
+          echo "$headers" | grep -Eiq '^location: https://cnetstore\.mciedu\.com/'
+      - name: Verify security headers
+        run: |
+          set -euo pipefail
+          headers="$(curl --silent --show-error --head "$STORE_URL/")"
+          echo "$headers"
+          echo "$headers" | grep -Eiq '^strict-transport-security:'
+          echo "$headers" | grep -Eiq '^content-security-policy:'
+          echo "$headers" | grep -Eiq '^x-content-type-options:[[:space:]]*nosniff'
+          echo "$headers" | grep -Eiq '^x-frame-options:[[:space:]]*SAMEORIGIN'
+          echo "$headers" | grep -Eiq '^referrer-policy:'
