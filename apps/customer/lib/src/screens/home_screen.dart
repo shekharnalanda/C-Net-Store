@@ -5,15 +5,107 @@ import '../theme/app_theme.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-  @override Widget build(BuildContext context) => Scaffold(appBar: AppBar(title: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('C-Net Store', style: TextStyle(fontWeight: FontWeight.w800)), Text('Delivering in Bihar Sharif', style: TextStyle(fontSize: 12))]), actions: const [IconButton(onPressed: null, icon: Icon(Icons.notifications_none))]), body: RefreshIndicator(onRefresh: () async {}, child: ListView(padding: const EdgeInsets.all(16), children: [
-    TextField(readOnly: true, decoration: InputDecoration(hintText: 'Search products, groceries or food', prefixIcon: const Icon(Icons.search), suffixIcon: Icon(Icons.mic, color: Theme.of(context).colorScheme.primary))), const SizedBox(height: 18),
-    Row(children: const [Expanded(child: _ServiceCard(title: 'Shopping', subtitle: 'Local stores', icon: Icons.shopping_bag_outlined, color: AppColors.blue)), SizedBox(width: 10), Expanded(child: _ServiceCard(title: 'Grocery', subtitle: 'Daily needs', icon: Icons.local_grocery_store_outlined, color: AppColors.green)), SizedBox(width: 10), Expanded(child: _ServiceCard(title: 'Food', subtitle: 'Restaurants', icon: Icons.restaurant_outlined, color: AppColors.orange))]), const SizedBox(height: 22),
-    Text('Top offers', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)), const SizedBox(height: 10), SizedBox(height: 150, child: FutureBuilder<List<dynamic>>(future: ApiClient().banners(), builder: (context, snapshot) { final banners = snapshot.data ?? []; if (banners.isEmpty) return const _OfferPlaceholder(); return ListView.separated(scrollDirection: Axis.horizontal, itemCount: banners.length, separatorBuilder: (_, __) => const SizedBox(width: 12), itemBuilder: (_, i) => Container(width: 290, padding: const EdgeInsets.all(18), decoration: BoxDecoration(gradient: const LinearGradient(colors: [AppColors.blue, AppColors.darkBlue]), borderRadius: BorderRadius.circular(18)), child: Text(banners[i]['title']?.toString() ?? 'C-Net Store Offer', style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))); })), const SizedBox(height: 22),
-    Text('Popular near you', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)), const SizedBox(height: 10), const _EmptyProducts(),
-  ])));
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('C-Net Store')),
+    body: ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text('Delivering in Bihar Sharif'),
+        const SizedBox(height: 16),
+        const TextField(
+          readOnly: true,
+          decoration: InputDecoration(
+            hintText: 'Search products, groceries or food',
+            prefixIcon: Icon(Icons.search),
+          ),
+        ),
+        const SizedBox(height: 18),
+        const Row(
+          children: [
+            Expanded(
+              child: _ServiceCard(
+                'Shopping',
+                Icons.shopping_bag_outlined,
+                AppColors.blue,
+              ),
+            ),
+            Expanded(
+              child: _ServiceCard(
+                'Grocery',
+                Icons.local_grocery_store_outlined,
+                AppColors.green,
+              ),
+            ),
+            Expanded(
+              child: _ServiceCard(
+                'Food',
+                Icons.restaurant_outlined,
+                AppColors.orange,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 22),
+        Text('Top offers', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 140,
+          child: FutureBuilder<List<dynamic>>(
+            future: ApiClient().banners(),
+            builder: (_, snapshot) {
+              final banners = snapshot.data ?? [];
+              if (banners.isEmpty)
+                return const _Offer('Everything local, delivered');
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: banners.length,
+                itemBuilder: (_, i) => SizedBox(
+                  width: 280,
+                  child: _Offer(
+                    (banners[i] as Map<String, dynamic>)['title']?.toString() ??
+                        'C-Net Store Offer',
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
-class _ServiceCard extends StatelessWidget { const _ServiceCard({required this.title, required this.subtitle, required this.icon, required this.color}); final String title, subtitle; final IconData icon; final Color color; @override Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8), child: Column(children: [CircleAvatar(backgroundColor: color.withValues(alpha: .12), foregroundColor: color, child: Icon(icon)), const SizedBox(height: 8), Text(title, style: const TextStyle(fontWeight: FontWeight.bold)), Text(subtitle, style: Theme.of(context).textTheme.bodySmall)]))); }
-class _OfferPlaceholder extends StatelessWidget { const _OfferPlaceholder(); @override Widget build(BuildContext context) => Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(gradient: const LinearGradient(colors: [AppColors.orange, Color(0xFFFFA726)]), borderRadius: BorderRadius.circular(18)), child: const Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [Text('Everything local, delivered', style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.bold)), SizedBox(height: 6), Text('Shopping • Grocery • Food', style: TextStyle(color: Colors.white))])); }
-class _EmptyProducts extends StatelessWidget { const _EmptyProducts(); @override Widget build(BuildContext context) => const Card(child: Padding(padding: EdgeInsets.all(24), child: Row(children: [Icon(Icons.storefront_outlined, size: 38), SizedBox(width: 14), Expanded(child: Text('Nearby stores and products will appear here.'))]))); }
+class _ServiceCard extends StatelessWidget {
+  const _ServiceCard(this.title, this.icon, this.color);
+  final String title;
+  final IconData icon;
+  final Color color;
+  @override
+  Widget build(BuildContext context) => Card(
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        children: [
+          Icon(icon, color: color),
+          Text(title, textAlign: TextAlign.center),
+        ],
+      ),
+    ),
+  );
+}
 
+class _Offer extends StatelessWidget {
+  const _Offer(this.title);
+  final String title;
+  @override
+  Widget build(BuildContext context) => Card(
+    color: AppColors.blue,
+    child: Center(
+      child: Text(
+        title,
+        style: const TextStyle(color: Colors.white, fontSize: 18),
+      ),
+    ),
+  );
+}

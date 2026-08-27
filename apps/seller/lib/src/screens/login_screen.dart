@@ -1,12 +1,113 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+
 import '../core/api_client.dart';
 import 'main_shell.dart';
 
-class LoginScreen extends StatefulWidget { const LoginScreen({super.key}); @override State<LoginScreen> createState() => _LoginScreenState(); }
-class _LoginScreenState extends State<LoginScreen> {
-  final login = TextEditingController(), password = TextEditingController(); bool busy = false; String? error;
-  Future<void> submit() async { if (login.text.trim().isEmpty || password.text.isEmpty) { setState(() => error = 'Login details दर्ज करें।'); return; } setState(() { busy = true; error = null; }); try { await ApiClient().login(login.text.trim(), password.text); if (!mounted) return; Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const MainShell()), (_) => false); } on DioException catch (e) { setState(() => error = e.response?.data is Map ? e.response?.data['message']?.toString() : 'Login नहीं हो सका।'); } finally { if (mounted) setState(() => busy = false); } }
-  @override Widget build(BuildContext context) => Scaffold(body: SafeArea(child: Center(child: SingleChildScrollView(padding: const EdgeInsets.all(24), child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 420), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Image.asset('assets/logo.png', height: 150), Text('Seller Partner', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)), const SizedBox(height: 6), const Text('अपनी दुकान, grocery या restaurant manage करें', textAlign: TextAlign.center), const SizedBox(height: 28), TextField(controller: login, decoration: const InputDecoration(labelText: 'Mobile number or email', prefixIcon: Icon(Icons.storefront_outlined))), const SizedBox(height: 14), TextField(controller: password, obscureText: true, decoration: const InputDecoration(labelText: 'Password', prefixIcon: Icon(Icons.lock_outline))), if (error != null) Padding(padding: const EdgeInsets.only(top: 12), child: Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error))), const SizedBox(height: 20), ElevatedButton(onPressed: busy ? null : submit, child: busy ? const CircularProgressIndicator(color: Colors.white) : const Text('Seller Login')), const SizedBox(height: 12), TextButton(onPressed: () {}, child: const Text('Register your local shop'))])))))));
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
+class _LoginScreenState extends State<LoginScreen> {
+  final login = TextEditingController(), password = TextEditingController();
+  bool busy = false;
+  String? error;
+  Future<void> submit() async {
+    if (login.text.trim().isEmpty || password.text.isEmpty) {
+      setState(() => error = 'Login details दर्ज करें।');
+      return;
+    }
+    setState(() {
+      busy = true;
+      error = null;
+    });
+    try {
+      await ApiClient().login(login.text.trim(), password.text);
+      if (!mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainShell()),
+        (_) => false,
+      );
+    } on DioException catch (e) {
+      setState(
+        () => error = e.response?.data is Map
+            ? e.response?.data['message']?.toString()
+            : 'Login नहीं हो सका।',
+      );
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: SafeArea(
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Image.asset('assets/logo.png', height: 150),
+                Text(
+                  'Seller Partner',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'अपनी दुकान, grocery या restaurant manage करें',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 28),
+                TextField(
+                  controller: login,
+                  decoration: const InputDecoration(
+                    labelText: 'Mobile number or email',
+                    prefixIcon: Icon(Icons.storefront_outlined),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: password,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: Icon(Icons.lock_outline),
+                  ),
+                ),
+                if (error != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Text(
+                      error!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: busy ? null : submit,
+                  child: busy
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text('Seller Login'),
+                ),
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: () {},
+                  child: const Text('Register your local shop'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}

@@ -1,6 +1,62 @@
 import 'package:flutter/material.dart';
-import '../core/token_store.dart'; import 'login_screen.dart';
 
-class AccountScreen extends StatelessWidget { const AccountScreen({super.key}); @override Widget build(BuildContext context) => Scaffold(appBar: AppBar(title: const Text('Business')), body: ListView(padding: const EdgeInsets.all(16), children: [const Card(child: ListTile(contentPadding: EdgeInsets.all(16), leading: CircleAvatar(radius: 28, child: Icon(Icons.storefront)), title: Text('My C-Net Store', style: TextStyle(fontWeight: FontWeight.bold)), subtitle: Text('Business profile and approval'))), const SizedBox(height: 12), const _Item(Icons.store_mall_directory_outlined, 'Business details'), const _Item(Icons.location_on_outlined, 'Outlets & service radius'), const _Item(Icons.local_shipping_outlined, 'Delivery settings'), const _Item(Icons.account_balance_outlined, 'Settlements & earnings'), const _Item(Icons.support_agent, 'Seller support'), const SizedBox(height: 12), OutlinedButton.icon(onPressed: () async { await const TokenStore().clear(); if (!context.mounted) return; Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const LoginScreen()), (_) => false); }, icon: const Icon(Icons.logout), label: const Text('Logout'))])); }
-class _Item extends StatelessWidget { const _Item(this.icon, this.title); final IconData icon; final String title; @override Widget build(BuildContext context) => Card(child: ListTile(leading: Icon(icon), title: Text(title), trailing: const Icon(Icons.chevron_right), onTap: () {})); }
+import '../core/token_store.dart';
+import 'login_screen.dart';
 
+class AccountScreen extends StatelessWidget {
+  const AccountScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Business')),
+    body: ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Card(
+          child: ListTile(
+            contentPadding: EdgeInsets.all(16),
+            leading: CircleAvatar(radius: 28, child: Icon(Icons.storefront)),
+            title: Text(
+              'My C-Net Store',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text('Business profile and approval'),
+          ),
+        ),
+        const SizedBox(height: 12),
+        const _Item(Icons.store_mall_directory_outlined, 'Business details'),
+        const _Item(Icons.location_on_outlined, 'Outlets & service radius'),
+        const _Item(Icons.local_shipping_outlined, 'Delivery settings'),
+        const _Item(Icons.account_balance_outlined, 'Settlements & earnings'),
+        const _Item(Icons.support_agent, 'Seller support'),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: () async {
+            await const TokenStore().clear();
+            if (!context.mounted) return;
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+              (_) => false,
+            );
+          },
+          icon: const Icon(Icons.logout),
+          label: const Text('Logout'),
+        ),
+      ],
+    ),
+  );
+}
+
+class _Item extends StatelessWidget {
+  const _Item(this.icon, this.title);
+  final IconData icon;
+  final String title;
+  @override
+  Widget build(BuildContext context) => Card(
+    child: ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () {},
+    ),
+  );
+}

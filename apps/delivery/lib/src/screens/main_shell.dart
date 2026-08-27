@@ -1,4 +1,52 @@
-import 'package:flutter/material.dart'; import 'assignments_screen.dart'; import 'earnings_screen.dart'; import 'home_screen.dart'; import 'profile_screen.dart';
-class MainShell extends StatefulWidget { const MainShell({super.key}); @override State<MainShell> createState() => _MainShellState(); }
-class _MainShellState extends State<MainShell> { int index = 0; static const pages = [HomeScreen(), AssignmentsScreen(), EarningsScreen(), ProfileScreen()]; @override Widget build(BuildContext context) => Scaffold(body: IndexedStack(index: index, children: pages), bottomNavigationBar: NavigationBar(selectedIndex: index, onDestinationSelected: (value) => setState(() => index = value), destinations: const [NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'), NavigationDestination(icon: Icon(Icons.delivery_dining_outlined), selectedIcon: Icon(Icons.delivery_dining), label: 'Deliveries'), NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: 'Earnings'), NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile')]))); }
+import 'package:flutter/material.dart';
 
+import 'assignments_screen.dart';
+import 'earnings_screen.dart';
+import 'home_screen.dart';
+import 'profile_screen.dart';
+
+class MainShell extends StatefulWidget {
+  const MainShell({super.key});
+  @override
+  State<MainShell> createState() => _MainShellState();
+}
+
+class _MainShellState extends State<MainShell> {
+  int index = 0;
+  static const pages = [
+    HomeScreen(),
+    AssignmentsScreen(),
+    EarningsScreen(),
+    ProfileScreen(),
+  ];
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: IndexedStack(index: index, children: pages),
+    bottomNavigationBar: NavigationBar(
+      selectedIndex: index,
+      onDestinationSelected: (value) => setState(() => index = value),
+      destinations: const [
+        NavigationDestination(
+          icon: Icon(Icons.home_outlined),
+          selectedIcon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.delivery_dining_outlined),
+          selectedIcon: Icon(Icons.delivery_dining),
+          label: 'Deliveries',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.account_balance_wallet_outlined),
+          selectedIcon: Icon(Icons.account_balance_wallet),
+          label: 'Earnings',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.person_outline),
+          selectedIcon: Icon(Icons.person),
+          label: 'Profile',
+        ),
+      ],
+    ),
+  );
+}

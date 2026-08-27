@@ -28,11 +28,12 @@ class _AppGate extends StatelessWidget {
       future: const TokenStore().hasToken(),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
         return snapshot.data == true ? const MainShell() : const LoginScreen();
       },
     );
   }
 }
-
