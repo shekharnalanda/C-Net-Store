@@ -93,6 +93,16 @@ class ApiClient {
       (await dio.get<Map<String, dynamic>>('/seller/products')).data ??
       <String, dynamic>{};
 
+  Future<Map<String, dynamic>> productImageLibrary({String? search, String? group, int? categoryId}) async =>
+      (await dio.get<Map<String, dynamic>>('/seller/product-image-library', queryParameters: {
+        if (search != null && search.isNotEmpty) 'search': search,
+        if (group != null && group.isNotEmpty) 'group': group,
+        if (categoryId != null) 'category_id': categoryId,
+      })).data ?? <String, dynamic>{};
+
+  Future<List<dynamic>> productImageGroups() async =>
+      ((await dio.get<Map<String, dynamic>>('/seller/product-image-library/groups')).data?['data'] as List<dynamic>?) ?? <dynamic>[];
+
   Future<Map<String, dynamic>> createProduct(
     Map<String, dynamic> payload,
   ) async =>

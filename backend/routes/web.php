@@ -5,6 +5,7 @@ use App\Http\Controllers\Web\StorefrontController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\OperationsController as AdminOperationsController;
+use App\Http\Controllers\Admin\ProductImageLibraryController as AdminProductImageLibraryController;
 
 Route::get('/', [StorefrontController::class, 'home'])->name('home');
 Route::get('/shop', [StorefrontController::class, 'catalog'])->name('catalog');
@@ -23,6 +24,10 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('/', AdminDashboardController::class)->name('dashboard');
         Route::get('/sellers', [AdminOperationsController::class, 'sellers'])->name('sellers');
         Route::get('/products', [AdminOperationsController::class, 'products'])->name('products');
+        Route::get('/product-image-library', [AdminProductImageLibraryController::class, 'index'])->name('image-library.index');
+        Route::post('/product-image-library', [AdminProductImageLibraryController::class, 'store'])->name('image-library.store');
+        Route::patch('/product-image-library/{asset}', [AdminProductImageLibraryController::class, 'update'])->name('image-library.update');
+        Route::delete('/product-image-library/{asset}', [AdminProductImageLibraryController::class, 'destroy'])->name('image-library.destroy');
         Route::get('/orders', [AdminOperationsController::class, 'orders'])->name('orders');
         Route::get('/customers', [AdminOperationsController::class, 'customers'])->name('customers');
         Route::get('/delivery', [AdminOperationsController::class, 'delivery'])->name('delivery');

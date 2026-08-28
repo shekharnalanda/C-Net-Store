@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../core/api_client.dart';
+import 'image_library_screen.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Products & Inventory')),
+    appBar: AppBar(title: const Text('Products & Inventory'), actions: [IconButton(tooltip: 'Smart Image Library', icon: const Icon(Icons.photo_library_outlined), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImageLibraryScreen())))]),
     body: FutureBuilder<Map<String, dynamic>>(
       future: ApiClient().products(),
       builder: (_, snapshot) {

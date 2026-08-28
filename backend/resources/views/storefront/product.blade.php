@@ -1,7 +1,7 @@
 @extends('layouts.storefront')
 @section('title', $product->name.' | C-Net Store')
 @section('content')
-<section class="container product-detail"><div class="product-visual">{{ $product->product_type === 'food' ? '🍲' : ($product->product_type === 'grocery' ? '🥦' : '📦') }}</div><div>
+<section class="container product-detail"><div class="product-visual">@if($product->image_url)<img src="{{ $product->image_url }}" alt="{{ $product->name }}">@else{{ $product->product_type === 'food' ? '🍲' : ($product->product_type === 'grocery' ? '🥦' : '📦') }}@endif</div><div>
 <a class="muted" href="{{ route('businesses.show', $product->business) }}">{{ $product->business->name }}</a><h1>{{ $product->name }}</h1>
 <p>{{ $product->description ?: 'Available from a trusted C-Net Store seller in Bihar Sharif.' }}</p>
 <div class="detail-price">₹{{ number_format($product->sale_price ?? $product->price, 2) }} @if($product->sale_price)<del>₹{{ number_format($product->price, 2) }}</del>@endif</div>

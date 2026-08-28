@@ -6,6 +6,7 @@ use App\Enums\ApprovalStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Business;
 use App\Models\Product;
+use App\Models\ProductImageAsset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -15,7 +16,7 @@ class ProductController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        return response()->json(['data' => Product::query()->whereHas('business', fn ($query) => $query->where('owner_id', $request->user()->id))->with(['category', 'inventory'])->paginate(30)]);
+        return response()->json(['data' => Product::query()->whereHas('business', fn ($query) => $query->where('owner_id', $request->user()->id))->with(['category', 'inventory', 'libraryImage'])->paginate(30)]);
     }
 
     public function store(Request $request): JsonResponse
@@ -30,6 +31,10 @@ class ProductController extends Controller
             'is_active' => false,
         ]);
 
+        if ($product->product_image_asset_id) {
+            ProductImageAsset::whereKey($product->product_image_asset_id)->increment('usage_count');
+        }
+
         return response()->json(['message' => 'Product created for review.', 'data' => $product], 201);
     }
 
@@ -38,7 +43,12 @@ class ProductController extends Controller
         abort_unless($product->business->owner_id === $request->user()->id, 403);
         $data = $this->validated($request, true);
         unset($data['business_id']);
+        $oldAssetId = $product->product_image_asset_id;
         $product->update([...$data, 'is_active' => false]);
+        if ($oldAssetId !== $product->product_image_asset_id) {
+            ProductImageAsset::whereKey($oldAssetId)->where('usage_count', '>', 0)->decrement('usage_count');
+            ProductImageAsset::whereKey($product->product_image_asset_id)->increment('usage_count');
+        }
 
         return response()->json(['message' => 'Product updated and sent for review.', 'data' => $product->fresh()]);
     }
@@ -50,6 +60,7 @@ class ProductController extends Controller
         return $request->validate([
             'business_id' => [$required, 'integer', 'exists:businesses,id'],
             'category_id' => [$required, 'integer', 'exists:categories,id'],
+            'product_image_asset_id' => ['nullable', 'integer', Rule::exists('product_image_assets', 'id')->where('is_active', true)],
             'name' => [$required, 'string', 'max:190'],
             'sku' => ['nullable', 'string', 'max:80'],
             'description' => ['nullable', 'string', 'max:5000'],
