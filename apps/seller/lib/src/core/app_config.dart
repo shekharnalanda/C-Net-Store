@@ -4,12 +4,9 @@ abstract final class AppConfig {
     defaultValue: 'https://cnetstore.mciedu.com/api/v1',
   );
   static const websiteUrl = 'https://cnetstore.mciedu.com';
-  static const razorpayKeyId = String.fromEnvironment('RAZORPAY_KEY_ID');
-  static const googleMapsApiKey = String.fromEnvironment('GOOGLE_MAPS_API_KEY');
   static const firebaseEnabled =
       bool.fromEnvironment('FIREBASE_ENABLED', defaultValue: false);
   static const supportPhone = '7004773247';
-  static const alternatePhone = '9334779133';
   static const supportEmail = 'mcieducationalgroup@gmail.com';
 
   static void validateProduction() {

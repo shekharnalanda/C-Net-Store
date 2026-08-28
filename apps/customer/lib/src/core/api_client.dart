@@ -5,13 +5,15 @@ import 'token_store.dart';
 
 class ApiClient {
   ApiClient({TokenStore tokenStore = const TokenStore()})
-    : _tokenStore = tokenStore {
+      : _tokenStore = tokenStore {
+    AppConfig.validateProduction();
     dio = Dio(
       BaseOptions(
         baseUrl: AppConfig.apiBaseUrl,
         connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 20),
-        headers: {'Accept': 'application/json'},
+        receiveTimeout: const Duration(seconds: 25),
+        sendTimeout: const Duration(seconds: 25),
+        headers: const {'Accept': 'application/json'},
       ),
     );
     dio.interceptors.add(
@@ -46,15 +48,116 @@ class ApiClient {
     return data;
   }
 
+  Future<void> logout() async {
+    try {
+      await dio.post<void>('/logout');
+    } finally {
+      await _tokenStore.clear();
+    }
+  }
+
+  Future<Map<String, dynamic>> me() async =>
+      (await dio.get<Map<String, dynamic>>('/me')).data ??
+      <String, dynamic>{};
+
   Future<List<dynamic>> banners() async =>
       ((await dio.get<Map<String, dynamic>>('/banners')).data?['data']
           as List<dynamic>? ??
-      []);
+      <dynamic>[]);
+
   Future<List<dynamic>> catalog({String? type, String? query}) async =>
       ((await dio.get<Map<String, dynamic>>(
-            '/customer/catalog',
-            queryParameters: {'type': type, 'q': query},
-          )).data?['data']
-          as List<dynamic>? ??
-      []);
+        '/customer/catalog',
+        queryParameters: {'type': type, 'q': query},
+      ))
+              .data?['data'] as List<dynamic>? ??
+          <dynamic>[]);
+
+  Future<Map<String, dynamic>> cart(int cartId) async =>
+      (await dio.get<Map<String, dynamic>>('/customer/carts/$cartId')).data ??
+      <String, dynamic>{};
+
+  Future<Map<String, dynamic>> addCartItem(
+    Map<String, dynamic> payload,
+  ) async =>
+      (await dio.post<Map<String, dynamic>>(
+        '/customer/cart/items',
+        data: payload,
+      ))
+          .data ??
+      <String, dynamic>{};
+
+  Future<void> removeCartItem(int cartId, int itemId) =>
+      dio.delete<void>('/customer/carts/$cartId/items/$itemId');
+
+  Future<Map<String, dynamic>> checkout(
+    Map<String, dynamic> payload,
+  ) async =>
+      (await dio.post<Map<String, dynamic>>(
+        '/customer/checkout',
+        data: payload,
+      ))
+          .data ??
+      <String, dynamic>{};
+
+  Future<Map<String, dynamic>> orders() async =>
+      (await dio.get<Map<String, dynamic>>('/customer/orders')).data ??
+      <String, dynamic>{};
+
+  Future<Map<String, dynamic>> createPayment(int orderId) async =>
+      (await dio.post<Map<String, dynamic>>(
+        '/customer/orders/$orderId/payment',
+      ))
+          .data ??
+      <String, dynamic>{};
+
+  Future<Map<String, dynamic>> verifyPayment(
+    int orderId,
+    Map<String, dynamic> payload,
+  ) async =>
+      (await dio.post<Map<String, dynamic>>(
+        '/customer/orders/$orderId/payment/verify',
+        data: payload,
+      ))
+          .data ??
+      <String, dynamic>{};
+
+  Future<Map<String, dynamic>> addresses() async =>
+      (await dio.get<Map<String, dynamic>>('/customer/addresses')).data ??
+      <String, dynamic>{};
+
+  Future<Map<String, dynamic>> saveAddress(
+    Map<String, dynamic> payload,
+  ) async =>
+      (await dio.post<Map<String, dynamic>>(
+        '/customer/addresses',
+        data: payload,
+      ))
+          .data ??
+      <String, dynamic>{};
+
+  Future<Map<String, dynamic>> wishlist() async =>
+      (await dio.get<Map<String, dynamic>>('/customer/wishlist')).data ??
+      <String, dynamic>{};
+
+  Future<Map<String, dynamic>> toggleWishlist(int productId) async =>
+      (await dio.post<Map<String, dynamic>>(
+        '/customer/wishlist/$productId',
+      ))
+          .data ??
+      <String, dynamic>{};
+
+  Future<Map<String, dynamic>> supportTickets() async =>
+      (await dio.get<Map<String, dynamic>>('/customer/support')).data ??
+      <String, dynamic>{};
+
+  Future<Map<String, dynamic>> createSupportTicket(
+    Map<String, dynamic> payload,
+  ) async =>
+      (await dio.post<Map<String, dynamic>>(
+        '/customer/support',
+        data: payload,
+      ))
+          .data ??
+      <String, dynamic>{};
 }

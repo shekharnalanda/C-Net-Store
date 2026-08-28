@@ -1,7 +1,7 @@
 name: cnet_store_delivery
 description: C-Net Store delivery partner application.
 publish_to: none
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -9,11 +9,20 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dio: ^5.8.0
-  flutter_secure_storage: ^9.2.4
-  geolocator: ^14.0.0
-  go_router: ^16.0.0
   cached_network_image: ^3.4.1
+  dio: ^5.8.0
+  firebase_core: ^3.15.1
+  firebase_messaging: ^15.2.9
+  flutter_secure_storage: ^9.2.4
+  geolocator: ^14.0.2
+  go_router: ^16.0.0
+  google_maps_flutter: ^2.12.3
+  package_info_plus: ^8.3.0
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true

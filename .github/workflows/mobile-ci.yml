@@ -1,4 +1,4 @@
-name: Mobile apps CI
+name: Mobile Apps CI
 
 on:
   push:
@@ -16,36 +16,57 @@ permissions:
   contents: read
 
 jobs:
-  android:
-    name: ${{ matrix.app }} Android
+  flutter:
+    name: ${{ matrix.app }} app
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         app: [customer, seller, delivery]
+
     defaults:
       run:
         working-directory: apps/${{ matrix.app }}
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
-      - name: Generate Android host project
-        run: flutter create --platforms=android --org com.mciedu.cnetstore .
-      - name: Resolve packages
+
+      - name: Generate Android and iOS runners
+        run: |
+          flutter create \
+            --platforms=android,ios \
+            --org com.mciedu.cnetstore \
+            --project-name cnet_store_${{ matrix.app }} \
+            .
+
+      - name: Install dependencies
         run: flutter pub get
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+
       - name: Analyze
-        run: flutter analyze lib
-      - name: Build production-connected APK
-        run: >-
-          flutter build apk --debug
-          --dart-define=API_BASE_URL=https://cnetstore.mciedu.com/api/v1
+        run: flutter analyze --fatal-infos
+
+      - name: Test
+        run: flutter test
+
+      - name: Build Android debug APK
+        run: |
+          flutter build apk --debug \
+            --dart-define=API_BASE_URL=https://cnetstore.mciedu.com/api/v1 \
+            --dart-define=FIREBASE_ENABLED=false
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: cnet-store-${{ matrix.app }}-debug-apk
+          name: cnet-store-${{ matrix.app }}-debug
           path: apps/${{ matrix.app }}/build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 7

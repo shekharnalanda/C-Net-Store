@@ -1,0 +1,12 @@
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/build/
+**/coverage/
+**/android/key.properties
+**/android/*.jks
+**/android/*.keystore
+**/android/app/google-services.json
+**/ios/Runner/GoogleService-Info.plist
+mobile_env.production.json
