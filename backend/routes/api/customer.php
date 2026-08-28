@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Customer\ReviewController;
 use App\Http\Controllers\Api\Customer\WishlistController;
 use App\Http\Controllers\Api\Customer\DeviceController;
 use App\Http\Controllers\Api\Customer\SupportController;
+use App\Http\Controllers\Api\Customer\OrderController;
 
 Route::get('/catalog', fn () => response()->json(['data' => []]));
 
@@ -19,6 +20,7 @@ Route::middleware(['auth:sanctum', 'role:customer'])->group(function (): void {
     Route::post('/cart/items', [CartController::class, 'addItem']);
     Route::delete('/carts/{cart}/items/{item}', [CartController::class, 'removeItem']);
     Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:10,1');
+    Route::get('/orders', [OrderController::class, 'index']);
     Route::post('/orders/{order}/payment', [PaymentController::class, 'create'])->middleware('throttle:10,1');
     Route::post('/orders/{order}/payment/verify', [PaymentController::class, 'verify'])->middleware('throttle:20,1');
     Route::post('/orders/{order}/cancel', [CancellationController::class, 'store'])->middleware('throttle:10,1');

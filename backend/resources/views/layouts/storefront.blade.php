@@ -18,6 +18,6 @@
 </header>
 <main>@yield('content')</main>
 <footer class="footer"><div class="container footer-grid"><div><img class="footer-logo" src="{{ asset('images/cnet-store-logo.png') }}" alt="C-Net Store"><p>Your local marketplace for shopping, grocery and food delivery.</p></div><div><h3>Customer Care</h3><p><a href="tel:+917782801846">7782801846</a><br><a href="mailto:mcieducationalgroup@gmail.com">mcieducationalgroup@gmail.com</a></p></div><div><h3>Address</h3><p>MCI Campus, Quamruddin Ganj,<br>Bihar Sharif, Nalanda – 803101</p></div></div><div class="copyright">© {{ date('Y') }} C-Net Store. All rights reserved.</div></footer>
-<script src="{{ asset('js/storefront.js') }}" defer></script>
+<script src="{{ asset('js/storefront.js') }}?v=20260828" defer></script>
 @stack('scripts')
 </body></html>

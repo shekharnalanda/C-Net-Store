@@ -12,6 +12,7 @@ Route::get('/products/{product}', [StorefrontController::class, 'product'])->nam
 Route::get('/stores/{business}', [StorefrontController::class, 'business'])->name('businesses.show');
 Route::view('/login', 'storefront.login')->name('login');
 Route::get('/cart', [StorefrontController::class, 'cart'])->name('cart');
+Route::view('/orders', 'storefront.orders')->name('customer.orders');
 
 Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::middleware('guest')->group(function (): void {
