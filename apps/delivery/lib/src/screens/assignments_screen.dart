@@ -15,8 +15,9 @@ class AssignmentsScreen extends StatelessWidget {
         }
         final page = snapshot.data?['data'] as Map<String, dynamic>?;
         final rows = page?['data'] as List<dynamic>? ?? [];
-        if (rows.isEmpty)
+        if (rows.isEmpty) {
           return const Center(child: Text('No delivery assignments yet.'));
+        }
         return ListView.builder(
           itemCount: rows.length,
           itemBuilder: (_, i) {

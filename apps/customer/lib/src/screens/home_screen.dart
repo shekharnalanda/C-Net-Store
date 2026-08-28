@@ -55,8 +55,9 @@ class HomeScreen extends StatelessWidget {
             future: ApiClient().banners(),
             builder: (_, snapshot) {
               final banners = snapshot.data ?? [];
-              if (banners.isEmpty)
+              if (banners.isEmpty) {
                 return const _Offer('Everything local, delivered');
+              }
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: banners.length,

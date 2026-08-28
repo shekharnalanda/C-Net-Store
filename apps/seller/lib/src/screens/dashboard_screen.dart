@@ -27,10 +27,16 @@ class DashboardScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          FutureBuilder<List<dynamic>>(
+          FutureBuilder<Map<String, dynamic>>(
             future: ApiClient().businesses(),
             builder: (_, snapshot) {
-              final businesses = snapshot.data ?? [];
+              final response = snapshot.data ?? <String, dynamic>{};
+              final payload = response['data'];
+              final businesses = payload is List<dynamic>
+                  ? payload
+                  : payload is Map<String, dynamic>
+                  ? payload['data'] as List<dynamic>? ?? <dynamic>[]
+                  : <dynamic>[];
               final status = businesses.isEmpty
                   ? 'Registration required'
                   : businesses.first['status']?.toString() ?? 'pending';

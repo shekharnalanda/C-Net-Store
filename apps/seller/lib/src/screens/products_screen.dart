@@ -15,7 +15,9 @@ class ProductsScreen extends StatelessWidget {
         }
         final page = snapshot.data?['data'] as Map<String, dynamic>?;
         final items = page?['data'] as List<dynamic>? ?? [];
-        if (items.isEmpty) return const Center(child: Text('No products yet.'));
+        if (items.isEmpty) {
+          return const Center(child: Text('No products yet.'));
+        }
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: items.length,

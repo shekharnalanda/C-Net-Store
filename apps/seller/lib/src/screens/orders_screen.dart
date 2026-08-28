@@ -10,16 +10,18 @@ class OrdersScreen extends StatelessWidget {
     body: FutureBuilder<Map<String, dynamic>>(
       future: ApiClient().orders(),
       builder: (_, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done)
+        if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
+        }
         final orders =
             ((snapshot.data?['data'] as Map<String, dynamic>?)?['data']
                 as List<dynamic>? ??
             []);
-        if (orders.isEmpty)
+        if (orders.isEmpty) {
           return const Center(
             child: Text('New customer orders will appear here.'),
           );
+        }
         return ListView.separated(
           padding: const EdgeInsets.all(16),
           itemCount: orders.length,

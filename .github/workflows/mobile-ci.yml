@@ -40,6 +40,7 @@ jobs:
       - name: Generate Android and iOS runners
         run: |
           flutter create \
+            --empty \
             --platforms=android,ios \
             --org com.mciedu.cnetstore \
             --project-name cnet_store_${{ matrix.app }} \

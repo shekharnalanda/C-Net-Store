@@ -18,11 +18,13 @@ class _HomeScreenState extends State<HomeScreen> {
       Position? position;
       if (value) {
         var permission = await Geolocator.checkPermission();
-        if (permission == LocationPermission.denied)
+        if (permission == LocationPermission.denied) {
           permission = await Geolocator.requestPermission();
+        }
         if (permission == LocationPermission.denied ||
-            permission == LocationPermission.deniedForever)
+            permission == LocationPermission.deniedForever) {
           throw Exception('Location permission required');
+        }
         position = await Geolocator.getCurrentPosition();
       }
       await ApiClient().availability(
@@ -32,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       setState(() => online = value);
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -40,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         );
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
