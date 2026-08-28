@@ -41,5 +41,64 @@ class ProductImagePackFifteenSeeder extends Seeder
                 ]
             );
         }
+
+        $legacyHindiKeywords = [
+            'chicken-biryani' => 'चिकन बिरयानी',
+            'vegetable-biryani' => 'वेज बिरयानी',
+            'vegetarian-thali' => 'शाकाहारी थाली',
+            'paneer-butter-masala' => 'पनीर बटर मसाला',
+            'vegetable-pizza' => 'वेज पिज़्ज़ा',
+            'vegetable-burger' => 'वेज बर्गर',
+            'basmati-rice' => 'बासमती चावल',
+            'wheat-flour' => 'गेहूं का आटा',
+            'toor-dal' => 'तूर दाल',
+            'cooking-oil' => 'खाना पकाने का तेल',
+            'indian-spices' => 'भारतीय मसाले',
+            'sugar' => 'चीनी',
+            'apples' => 'सेब',
+            'bananas' => 'केला',
+            'mangoes' => 'आम',
+            'tomatoes' => 'टमाटर',
+            'potatoes' => 'आलू',
+            'onions' => 'प्याज',
+            'lipstick' => 'लिपस्टिक',
+            'face-cream' => 'फेस क्रीम',
+            'shampoo' => 'शैम्पू',
+            'hair-oil' => 'बालों का तेल',
+            'bath-soap' => 'नहाने का साबुन',
+            'makeup-kit' => 'मेकअप किट',
+            'smartphone' => 'स्मार्टफोन',
+            'laptop' => 'लैपटॉप',
+            'wireless-headphones' => 'वायरलेस हेडफोन',
+            'led-television' => 'एलईडी टेलीविजन',
+            'bluetooth-speaker' => 'ब्लूटूथ स्पीकर',
+            'smartwatch' => 'स्मार्टवॉच',
+            'pressure-cooker' => 'प्रेशर कुकर',
+            'frying-pan' => 'फ्राइंग पैन',
+            'dinner-set' => 'डिनर सेट',
+            'bedsheet' => 'चादर',
+            'storage-containers' => 'भंडारण डिब्बे',
+            'electric-kettle' => 'इलेक्ट्रिक केतली',
+            'mens-shirt' => 'पुरुषों की शर्ट',
+            'saree' => 'साड़ी',
+            'womens-kurti' => 'महिला कुर्ती',
+            'jeans' => 'जींस',
+            'casual-shoes' => 'कैजुअल जूते',
+            'handbag' => 'हैंडबैग',
+            'notebooks' => 'नोटबुक',
+            'school-backpack' => 'स्कूल बैग',
+            'geometry-box' => 'ज्यामिति बॉक्स',
+            'writing-set' => 'लेखन सेट',
+            'calculator' => 'कैलकुलेटर',
+            'art-supplies' => 'कला सामग्री',
+        ];
+
+        foreach ($legacyHindiKeywords as $slug => $hindiKeyword) {
+            $asset = ProductImageAsset::query()->where('slug', 'cnet-original-'.$slug)->first();
+
+            if ($asset !== null) {
+                $asset->update(['keywords' => array_values(array_unique([...$asset->keywords, $hindiKeyword]))]);
+            }
+        }
     }
 }
