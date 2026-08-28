@@ -41,10 +41,14 @@ class _ImageLibraryScreenState extends State<ImageLibraryScreen> {
         ]))),
       ])),
       Expanded(child: FutureBuilder<Map<String, dynamic>>(future: assets, builder: (_, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) return const Center(child: CircularProgressIndicator());
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
         final page = snapshot.data?['data'] as Map<String, dynamic>?;
         final rows = page?['data'] as List<dynamic>? ?? <dynamic>[];
-        if (rows.isEmpty) return const Center(child: Text('No approved images match this search.'));
+        if (rows.isEmpty) {
+          return const Center(child: Text('No approved images match this search.'));
+        }
         return GridView.builder(padding: const EdgeInsets.all(12), gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10, childAspectRatio: .82), itemCount: rows.length, itemBuilder: (_, index) {
           final asset = rows[index] as Map<String, dynamic>;
           return InkWell(onTap: () => Navigator.pop(context, asset), child: Card(clipBehavior: Clip.antiAlias, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
