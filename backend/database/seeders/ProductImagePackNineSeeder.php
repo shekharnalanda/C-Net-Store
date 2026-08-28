@@ -20,7 +20,7 @@ class ProductImagePackNineSeeder extends Seeder
             ['Office Supplies', 'File Folders', 'file-folders', ['file folders', 'document folder', 'office file', 'फाइल फोल्डर', 'दस्तावेज फाइल'], 'office-supplies/file-folders.webp'],
             ['Office Supplies', 'Desk Organizer', 'desk-organizer', ['desk organizer', 'pen stand', 'office organizer', 'डेस्क ऑर्गनाइजर', 'पेन स्टैंड'], 'office-supplies/desk-organizer.webp'],
             ['Office Supplies', 'Stapler', 'stapler', ['stapler', 'office stapler', 'paper stapler', 'स्टेपलर', 'कागज स्टेपलर'], 'office-supplies/stapler.webp'],
-            ['Office Supplies', 'Calculator', 'calculator', ['calculator', 'desktop calculator', 'office calculator', 'कैलकुलेटर', 'गणना मशीन'], 'office-supplies/calculator.webp'],
+            ['Office Supplies', 'Office Calculator', 'office-calculator', ['calculator', 'desktop calculator', 'office calculator', 'कैलकुलेटर', 'गणना मशीन'], 'office-supplies/calculator.webp'],
             ['Office Supplies', 'Office Chair', 'office-chair', ['office chair', 'ergonomic chair', 'computer chair', 'ऑफिस कुर्सी', 'कंप्यूटर चेयर'], 'office-supplies/office-chair.webp'],
         ];
 
