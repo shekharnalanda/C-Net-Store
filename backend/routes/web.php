@@ -91,3 +91,5 @@ Route::middleware('throttle:5,1')->group(function (): void {
         return redirect('/login')->with('status', 'Password changed successfully. Please login.');
     });
 });
+
+Route::get("/sitemap.xml", [\App\Http\Controllers\Web\SeoController::class, "sitemap"])->name("sitemap");

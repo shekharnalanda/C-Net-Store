@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+Disallow: /checkout
+Disallow: /cart
+Disallow: /seller/
+Disallow: /delivery/
+
+Sitemap: https://cnetstore.mciedu.com/sitemap.xml
