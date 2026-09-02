@@ -22,7 +22,7 @@ class SellerProductWorkflowTest extends TestCase
 
     public function test_seller_category_endpoint_only_returns_active_matching_categories(): void
     {
-        Sanctum::actingAs(User::factory()->create());
+        Sanctum::actingAs($this->user());
 
         Category::query()->create($this->categoryData('Shopping', 'shopping', true));
         Category::query()->create($this->categoryData('Grocery', 'grocery', true));
@@ -36,7 +36,7 @@ class SellerProductWorkflowTest extends TestCase
 
     public function test_unapproved_business_cannot_submit_products(): void
     {
-        $user = User::factory()->create();
+        $user = $this->user();
         Sanctum::actingAs($user);
         $business = $this->business($user, 'pending');
         $category = Category::query()->create($this->categoryData('Shopping', 'shopping'));
@@ -50,7 +50,7 @@ class SellerProductWorkflowTest extends TestCase
 
     public function test_category_and_library_image_must_match_product_type_and_category(): void
     {
-        $user = User::factory()->create();
+        $user = $this->user();
         Sanctum::actingAs($user);
         $business = $this->business($user, 'approved');
         $shopping = Category::query()->create($this->categoryData('Shopping', 'shopping'));
@@ -69,7 +69,7 @@ class SellerProductWorkflowTest extends TestCase
 
     public function test_valid_submission_is_inactive_updates_usage_and_edit_resets_review(): void
     {
-        $user = User::factory()->create();
+        $user = $this->user();
         Sanctum::actingAs($user);
         $business = $this->business($user, 'approved');
         $category = Category::query()->create($this->categoryData('Shopping', 'shopping'));
@@ -119,6 +119,21 @@ class SellerProductWorkflowTest extends TestCase
         ]);
     }
 
+    private function user(): User
+    {
+        $token = uniqid();
+
+        return User::query()->create([
+            'name' => 'Test Seller',
+            'email' => 'seller-'.$token.'@example.com',
+            'phone' => '9'.substr(preg_replace('/\D/', '', $token), -9),
+            'password' => 'test-password',
+            'role' => 'seller',
+            'status' => 'approved',
+            'preferred_language' => 'en',
+        ]);
+    }
+
     private function asset(Category $category): ProductImageAsset
     {
         $token = uniqid();
@@ -126,6 +141,7 @@ class SellerProductWorkflowTest extends TestCase
         return ProductImageAsset::query()->create([
             'category_id' => $category->id,
             'group_name' => $category->name,
+            'name' => 'Test Asset '.$token,
             'source' => 'test',
             'slug' => 'test-asset-'.$token,
             'keywords' => ['test', 'परीक्षण'],
