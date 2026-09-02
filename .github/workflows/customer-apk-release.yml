@@ -1,10 +1,12 @@
-name: Customer Android APK Release
+name: C-Net Store Android Apps Release
 
 on:
   push:
     branches: [main]
     paths:
       - 'apps/customer/**'
+      - 'apps/seller/**'
+      - 'apps/delivery/**'
       - '.github/workflows/customer-apk-release.yml'
   workflow_dispatch:
 
@@ -12,17 +14,14 @@ permissions:
   contents: write
 
 concurrency:
-  group: customer-android-apk-release
+  group: cnet-store-android-apps-release
   cancel-in-progress: true
 
 jobs:
   build-and-publish:
-    name: Build and publish customer APK
+    name: Build and publish all Android apps
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    defaults:
-      run:
-        working-directory: apps/customer
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
 
@@ -31,38 +30,42 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Generate Android runner
+      - name: Build customer, seller and delivery APKs
+        shell: bash
         run: |
-          flutter create \
-            --empty \
-            --platforms=android \
-            --org com.mciedu.cnetstore \
-            --project-name cnet_store_customer \
-            .
+          set -euo pipefail
+          for app in customer seller delivery; do
+            cd "$GITHUB_WORKSPACE/apps/$app"
+            flutter create \
+              --empty \
+              --platforms=android \
+              --org com.mciedu.cnetstore \
+              --project-name "cnet_store_${app}" \
+              .
+            flutter pub get
+            dart format lib test
+            flutter analyze --fatal-infos
+            flutter test
+            flutter build apk --release \
+              --dart-define=API_BASE_URL=https://cnetstore.mciedu.com/api/v1 \
+              --dart-define=FIREBASE_ENABLED=false
+          done
 
-      - name: Install dependencies
-        run: flutter pub get
+          cd "$GITHUB_WORKSPACE"
+          cp apps/customer/build/app/outputs/flutter-apk/app-release.apk C-Net-Store-Customer.apk
+          cp apps/seller/build/app/outputs/flutter-apk/app-release.apk C-Net-Store-Seller.apk
+          cp apps/delivery/build/app/outputs/flutter-apk/app-release.apk C-Net-Store-Delivery-Partner.apk
 
-      - name: Analyze and test
-        run: |
-          flutter analyze --fatal-infos
-          flutter test
-
-      - name: Build installable Android APK
-        run: |
-          flutter build apk --release \
-            --dart-define=API_BASE_URL=https://cnetstore.mciedu.com/api/v1 \
-            --dart-define=FIREBASE_ENABLED=false
-          cp build/app/outputs/flutter-apk/app-release.apk \
-            "$GITHUB_WORKSPACE/C-Net-Store-Customer.apk"
-
-      - name: Publish official beta APK
+      - name: Publish official Android beta apps
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: customer-app-v1.0.1-beta.3
-          name: C-Net Store Customer Android App v1.0.1 Beta 3
+          tag_name: mobile-apps-v1.0.1-beta.3
+          name: C-Net Store Android Apps v1.0.1 Beta 3
           body: |
-            Official C-Net Store Customer Android beta app for direct installation
-            before the Google Play Store launch.
-          files: C-Net-Store-Customer.apk
+            Official C-Net Store Android beta apps for direct installation:
+            Customer / General, Seller, and Delivery Partner.
+          files: |
+            C-Net-Store-Customer.apk
+            C-Net-Store-Seller.apk
+            C-Net-Store-Delivery-Partner.apk
           make_latest: true
