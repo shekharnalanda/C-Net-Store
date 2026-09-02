@@ -17,8 +17,10 @@ Route::get('/catalog', CatalogController::class);
 
 Route::middleware(['auth:sanctum', 'role:customer'])->group(function (): void {
     Route::apiResource('addresses', AddressController::class)->only(['index', 'store', 'update']);
+    Route::get('/carts', [CartController::class, 'index']);
     Route::get('/carts/{cart}', [CartController::class, 'show']);
     Route::post('/cart/items', [CartController::class, 'addItem']);
+    Route::patch('/carts/{cart}/items/{item}', [CartController::class, 'updateItem']);
     Route::delete('/carts/{cart}/items/{item}', [CartController::class, 'removeItem']);
     Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:10,1');
     Route::get('/orders', [OrderController::class, 'index']);

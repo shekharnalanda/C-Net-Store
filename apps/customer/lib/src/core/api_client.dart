@@ -85,6 +85,11 @@ class ApiClient {
       (await dio.get<Map<String, dynamic>>('/customer/carts/$cartId')).data ??
       <String, dynamic>{};
 
+  Future<List<dynamic>> carts() async =>
+      ((await dio.get<Map<String, dynamic>>('/customer/carts')).data?['data']
+          as List<dynamic>? ??
+      <dynamic>[]);
+
   Future<Map<String, dynamic>> addCartItem(
     Map<String, dynamic> payload,
   ) async =>
@@ -97,6 +102,18 @@ class ApiClient {
 
   Future<void> removeCartItem(int cartId, int itemId) =>
       dio.delete<void>('/customer/carts/$cartId/items/$itemId');
+
+  Future<Map<String, dynamic>> updateCartItem(
+    int cartId,
+    int itemId,
+    int quantity,
+  ) async =>
+      (await dio.patch<Map<String, dynamic>>(
+        '/customer/carts/$cartId/items/$itemId',
+        data: {'quantity': quantity},
+      ))
+          .data ??
+      <String, dynamic>{};
 
   Future<Map<String, dynamic>> checkout(
     Map<String, dynamic> payload,

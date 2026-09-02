@@ -13,15 +13,21 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _index = 0;
-  static const _pages = [
-    HomeScreen(),
-    CatalogScreen(),
-    CartScreen(),
-    AccountScreen(),
-  ];
+  int _cartVersion = 0;
+
+  void _cartChanged() => setState(() => _cartVersion++);
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: IndexedStack(index: _index, children: _pages),
+  Widget build(BuildContext context) {
+    final pages = [
+      const HomeScreen(),
+      CatalogScreen(onCartChanged: _cartChanged),
+      CartScreen(version: _cartVersion, onCartChanged: _cartChanged),
+      const AccountScreen(),
+    ];
+
+    return Scaffold(
+    body: IndexedStack(index: _index, children: pages),
     bottomNavigationBar: NavigationBar(
       selectedIndex: _index,
       onDestinationSelected: (value) => setState(() => _index = value),
@@ -49,4 +55,5 @@ class _MainShellState extends State<MainShell> {
       ],
     ),
   );
+  }
 }

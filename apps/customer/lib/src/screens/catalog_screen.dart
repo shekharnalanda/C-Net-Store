@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../core/api_client.dart';
 
 class CatalogScreen extends StatefulWidget {
-  const CatalogScreen({super.key});
+  const CatalogScreen({super.key, required this.onCartChanged});
+
+  final VoidCallback onCartChanged;
 
   @override
   State<CatalogScreen> createState() => _CatalogScreenState();
@@ -142,7 +144,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     childAspectRatio: 0.66,
                   ),
                   itemBuilder: (context, index) =>
-                      _ProductCard(product: _products[index]),
+                      _ProductCard(
+                        product: _products[index],
+                        onAdded: widget.onCartChanged,
+                      ),
                 ),
             ],
           ),
@@ -179,14 +184,42 @@ class _CatalogScreenState extends State<CatalogScreen> {
       );
 }
 
-class _ProductCard extends StatelessWidget {
-  const _ProductCard({required this.product});
+class _ProductCard extends StatefulWidget {
+  const _ProductCard({required this.product, required this.onAdded});
 
   final dynamic product;
+  final VoidCallback onAdded;
+
+  @override
+  State<_ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<_ProductCard> {
+  bool _adding = false;
+
+  Future<void> _add() async {
+    setState(() => _adding = true);
+    try {
+      final item = widget.product as Map<String, dynamic>;
+      await ApiClient().addCartItem({'product_id': item['id'], 'quantity': 1});
+      widget.onAdded();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Product cart में जोड़ दिया गया।')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cart में नहीं जुड़ा। फिर कोशिश करें।')),
+      );
+    } finally {
+      if (mounted) setState(() => _adding = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final item = product as Map<String, dynamic>;
+    final item = widget.product as Map<String, dynamic>;
     final business = item['business'] as Map<String, dynamic>?;
     final imageUrl = item['image_url'] as String?;
     final price = item['sale_price'] ?? item['price'] ?? 0;
@@ -235,6 +268,20 @@ class _ProductCard extends StatelessWidget {
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: _adding ? null : _add,
+                      icon: _adding
+                          ? const SizedBox.square(
+                              dimension: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.add_shopping_cart, size: 18),
+                      label: Text(_adding ? 'Adding...' : 'Add'),
                     ),
                   ),
                 ],
