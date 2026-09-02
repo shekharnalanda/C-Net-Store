@@ -110,12 +110,15 @@ class SellerProductWorkflowTest extends TestCase
 
     private function business(User $user, string $status): Business
     {
+        $token = uniqid();
+
         return Business::query()->create([
             'owner_id' => $user->id,
-            'name' => 'Test Business '.uniqid(),
-            'slug' => 'test-business-'.uniqid(),
-            'type' => 'shopping',
+            'name' => 'Test Business '.$token,
+            'slug' => 'test-business-'.$token,
+            'type' => 'retail',
             'status' => $status,
+            'phone' => '8'.substr(preg_replace('/\D/', '', $token), -9),
         ]);
     }
 
