@@ -145,7 +145,6 @@ class SellerProductWorkflowTest extends TestCase
             'category_id' => $category->id,
             'group_name' => $category->name,
             'name' => 'Test Asset '.$token,
-            'source' => 'test',
             'slug' => 'test-asset-'.$token,
             'keywords' => ['test', 'परीक्षण'],
             'image_path' => 'product-image-library/test-'.$token.'.webp',
@@ -154,7 +153,6 @@ class SellerProductWorkflowTest extends TestCase
             'license_source' => 'C-Net Store',
             'is_active' => true,
             'sort_order' => 1,
-            'usage_count' => 0,
         ]);
     }
 
