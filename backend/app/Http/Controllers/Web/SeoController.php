@@ -68,6 +68,10 @@ class SeoController extends Controller
         Builder $query,
         string $table
     ): bool {
+        if ($table === 'products' && Schema::hasColumn($table, 'sku')) {
+            $query->where('sku', 'not like', 'CNET-LIVE-TEST-%');
+        }
+
         if (Schema::hasColumn($table, 'approval_status')) {
             $query->where('approval_status', 'approved');
             return true;
