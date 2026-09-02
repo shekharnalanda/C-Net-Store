@@ -59,6 +59,10 @@ jobs:
           flutter analyze --fatal-infos 2>&1 | tee flutter-analyze.log
           status=${PIPESTATUS[0]}
           if [ "$status" -ne 0 ]; then
+            grep -E '(^|  )(error|warning|info) •' flutter-analyze.log |
+              while IFS= read -r issue; do
+                echo "::error title=Flutter analyze::${issue}"
+              done
             {
               echo "### Flutter analyze failure: ${{ matrix.app }} app"
               echo '```text'
