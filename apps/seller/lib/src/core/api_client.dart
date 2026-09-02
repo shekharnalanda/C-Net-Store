@@ -115,25 +115,40 @@ class ApiClient {
       ((await dio.get<Map<String, dynamic>>('/seller/product-image-library/groups')).data?['data'] as List<dynamic>?) ?? <dynamic>[];
 
   Future<Map<String, dynamic>> createProduct(
-    Map<String, dynamic> payload,
-  ) async =>
-      (await dio.post<Map<String, dynamic>>(
-        '/seller/products',
-        data: payload,
-      ))
-          .data ??
-      <String, dynamic>{};
+    Map<String, dynamic> payload, {
+    String? imagePath,
+  }) async {
+    final data = FormData.fromMap({
+      ...payload,
+      if (imagePath != null)
+        'image': await MultipartFile.fromFile(imagePath),
+    });
+    return (await dio.post<Map<String, dynamic>>(
+          '/seller/products',
+          data: data,
+        ))
+            .data ??
+        <String, dynamic>{};
+  }
 
   Future<Map<String, dynamic>> updateProduct(
     int productId,
-    Map<String, dynamic> payload,
-  ) async =>
-      (await dio.patch<Map<String, dynamic>>(
-        '/seller/products/$productId',
-        data: payload,
-      ))
-          .data ??
-      <String, dynamic>{};
+    Map<String, dynamic> payload, {
+    String? imagePath,
+  }) async {
+    final data = FormData.fromMap({
+      ...payload,
+      '_method': 'PATCH',
+      if (imagePath != null)
+        'image': await MultipartFile.fromFile(imagePath),
+    });
+    return (await dio.post<Map<String, dynamic>>(
+          '/seller/products/$productId',
+          data: data,
+        ))
+            .data ??
+        <String, dynamic>{};
+  }
 
   Future<Map<String, dynamic>> orders() async =>
       (await dio.get<Map<String, dynamic>>('/seller/orders')).data ??
