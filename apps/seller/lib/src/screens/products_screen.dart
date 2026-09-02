@@ -27,7 +27,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
       context,
       MaterialPageRoute(builder: (_) => ProductFormScreen(product: product)),
     );
-    if (changed == true) reload();
+    if (changed == true) {
+      reload();
+    }
   }
 
   @override

@@ -75,7 +75,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       }).toList();
       final categoryRows =
           await ApiClient().productCategories(productType: productType);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       setState(() {
         businesses = approved;
         categories = categoryRows;
@@ -85,12 +87,16 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         loading = false;
       });
     } catch (exception) {
-      if (mounted) setState(() { error = _message(exception); loading = false; });
+      if (mounted) {
+        setState(() { error = _message(exception); loading = false; });
+      }
     }
   }
 
   Future<void> _changeType(String? value) async {
-    if (value == null || value == productType) return;
+    if (value == null || value == productType) {
+      return;
+    }
     setState(() {
       productType = value;
       categoryId = null;
@@ -100,9 +106,13 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     });
     try {
       final rows = await ApiClient().productCategories(productType: value);
-      if (mounted) setState(() => categories = rows);
+      if (mounted) {
+        setState(() => categories = rows);
+      }
     } catch (exception) {
-      if (mounted) _show(_message(exception));
+      if (mounted) {
+        _show(_message(exception));
+      }
     }
   }
 
@@ -134,7 +144,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   }
 
   Future<void> _save() async {
-    if (!(formKey.currentState?.validate() ?? false)) return;
+    if (!(formKey.currentState?.validate() ?? false)) {
+      return;
+    }
     if (businessId == null || categoryId == null) {
       _show('Approved business and category are required.');
       return;
@@ -178,13 +190,19 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               payload,
               imagePath: customImage?.path,
             );
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       _show(response['message']?.toString() ?? 'Product saved.');
       Navigator.pop(context, true);
     } catch (exception) {
-      if (mounted) _show(_message(exception));
+      if (mounted) {
+        _show(_message(exception));
+      }
     } finally {
-      if (mounted) setState(() => saving = false);
+      if (mounted) {
+        setState(() => saving = false);
+      }
     }
   }
 
@@ -194,7 +212,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       final errors = data['errors'];
       if (errors is Map && errors.isNotEmpty) {
         final first = errors.values.first;
-        if (first is List && first.isNotEmpty) return first.first.toString();
+        if (first is List && first.isNotEmpty) {
+          return first.first.toString();
+        }
       }
       return data['message']?.toString() ?? 'Request failed.';
     }
