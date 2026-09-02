@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Customer\AddressController;
 use App\Http\Controllers\Api\Customer\CartController;
+use App\Http\Controllers\Api\Customer\CatalogController;
 use App\Http\Controllers\Api\Customer\CheckoutController;
 use App\Http\Controllers\Api\Customer\PaymentController;
 use App\Http\Controllers\Api\Customer\CancellationController;
@@ -12,7 +13,7 @@ use App\Http\Controllers\Api\Customer\DeviceController;
 use App\Http\Controllers\Api\Customer\SupportController;
 use App\Http\Controllers\Api\Customer\OrderController;
 
-Route::get('/catalog', fn () => response()->json(['data' => []]));
+Route::get('/catalog', CatalogController::class);
 
 Route::middleware(['auth:sanctum', 'role:customer'])->group(function (): void {
     Route::apiResource('addresses', AddressController::class)->only(['index', 'store', 'update']);
