@@ -24,4 +24,20 @@ jobs:
       - run: composer install --prefer-dist --no-interaction --no-progress
       - name: Validate PHP syntax
         run: find app bootstrap config database routes tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
-      - run: php artisan test
+      - name: Run automated tests
+        shell: bash
+        run: |
+          set +e
+          php artisan test 2>&1 | tee test-output.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            {
+              echo '## Backend test failure'
+              echo '```text'
+              tail -120 test-output.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            compact="$(tail -40 test-output.log | tr '\n' ' ' | cut -c1-3000)"
+            echo "::error title=Backend tests failed::$compact"
+          fi
+          exit "$status"
