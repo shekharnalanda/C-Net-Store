@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\Seller;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\ProductImageAsset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProductImageLibraryController extends Controller
 {
@@ -35,6 +37,26 @@ class ProductImageLibraryController extends Controller
             ->paginate(24);
 
         return response()->json(['data' => $assets]);
+    }
+
+    public function categories(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'product_type' => ['nullable', Rule::in(['shopping', 'grocery', 'food'])],
+        ]);
+
+        $categories = Category::query()
+            ->where('is_active', true)
+            ->whereNull('parent_id')
+            ->when(
+                $data['product_type'] ?? null,
+                fn ($query, $type) => $query->where('marketplace', $type)
+            )
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get(['id', 'name', 'slug', 'marketplace', 'image_path']);
+
+        return response()->json(['data' => $categories]);
     }
 
     public function groups(): JsonResponse

@@ -89,6 +89,17 @@ class ApiClient {
           .data ??
       <String, dynamic>{};
 
+  Future<List<dynamic>> productCategories({
+    String? productType,
+  }) async =>
+      ((await dio.get<Map<String, dynamic>>(
+        '/seller/product-categories',
+        queryParameters: {
+          if (productType != null) 'product_type': productType,
+        },
+      )).data?['data'] as List<dynamic>?) ??
+      <dynamic>[];
+
   Future<Map<String, dynamic>> products() async =>
       (await dio.get<Map<String, dynamic>>('/seller/products')).data ??
       <String, dynamic>{};
