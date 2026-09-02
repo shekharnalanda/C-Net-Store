@@ -1,0 +1,68 @@
+name: Customer Android APK Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/customer/**'
+      - '.github/workflows/customer-apk-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: customer-android-apk-release
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish:
+    name: Build and publish customer APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: apps/customer
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Generate Android runner
+        run: |
+          flutter create \
+            --empty \
+            --platforms=android \
+            --org com.mciedu.cnetstore \
+            --project-name cnet_store_customer \
+            .
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze and test
+        run: |
+          flutter analyze --fatal-infos
+          flutter test
+
+      - name: Build installable Android APK
+        run: |
+          flutter build apk --release \
+            --dart-define=API_BASE_URL=https://cnetstore.mciedu.com/api/v1 \
+            --dart-define=FIREBASE_ENABLED=false
+          cp build/app/outputs/flutter-apk/app-release.apk \
+            "$GITHUB_WORKSPACE/C-Net-Store-Customer.apk"
+
+      - name: Publish official beta APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: customer-app-v1.0.0-beta.2
+          name: C-Net Store Customer Android App v1.0.0 Beta 2
+          body: |
+            Official C-Net Store Customer Android beta app for direct installation
+            before the Google Play Store launch.
+          files: C-Net-Store-Customer.apk
+          make_latest: true
