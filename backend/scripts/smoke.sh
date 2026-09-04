@@ -26,6 +26,13 @@ check_protected() {
   if [ "$status" = "$expected" ]; then pass "$label protected ($status)"; else fail "$label protection (expected $expected, received $status)"; fi
 }
 
+check_api_protected() {
+  label="$1"
+  url="$2"
+  status="$(curl --silent --show-error --header 'Accept: application/json' --output "$body_file" --write-out '%{http_code}' "$url" || true)"
+  if [ "$status" = "401" ]; then pass "$label protected ($status)"; else fail "$label protection (expected 401, received $status)"; fi
+}
+
 check_apk_redirect() {
   label="$1"
   path="$2"
@@ -54,10 +61,10 @@ done
 
 check_protected "Web admin products" "$store_url/admin/products" "302"
 check_protected "Web admin orders" "$store_url/admin/orders" "302"
-check_protected "Customer orders API" "$store_url/api/v1/customer/orders" "401"
-check_protected "Seller dashboard API" "$store_url/api/v1/seller/dashboard" "401"
-check_protected "Delivery assignments API" "$store_url/api/v1/delivery/assignments" "401"
-check_protected "Admin dashboard API" "$store_url/api/v1/admin/dashboard" "401"
+check_api_protected "Customer orders API" "$store_url/api/v1/customer/orders"
+check_api_protected "Seller dashboard API" "$store_url/api/v1/seller/dashboard"
+check_api_protected "Delivery assignments API" "$store_url/api/v1/delivery/assignments"
+check_api_protected "Admin dashboard API" "$store_url/api/v1/admin/dashboard"
 
 check_apk_redirect "Customer" "/app/customer" "C-Net-Store-Customer.apk"
 check_apk_redirect "Seller" "/app/seller" "C-Net-Store-Seller.apk"
