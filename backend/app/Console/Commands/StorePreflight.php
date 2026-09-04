@@ -45,6 +45,13 @@ class StorePreflight extends Command
             $this->failCheck('Database connection/migrations', $exception->getMessage());
         }
 
+        if ($databaseReady) {
+            $catalogAudit = Artisan::call('store:catalog-audit');
+            $this->check('Published catalogue is safe', $catalogAudit === self::SUCCESS);
+            $imageAudit = Artisan::call('store:image-library-audit');
+            $this->check('Product image library is valid', $imageAudit === self::SUCCESS);
+        }
+
         $this->check('Razorpay key configured', ! $production || filled(config('services.razorpay.key_id')));
         $this->check('Razorpay secret configured', ! $production || filled(config('services.razorpay.key_secret')));
         $this->check('Razorpay webhook secret configured', ! $production || filled(config('services.razorpay.webhook_secret')));
@@ -54,6 +61,8 @@ class StorePreflight extends Command
         $this->check('Administrator account available', ! $production || $adminExists);
         $this->check('SMTP host configured', ! $production || filled(config('mail.mailers.smtp.host')));
         $this->check('Mail sender configured', filled(config('mail.from.address')));
+        $this->check('Queue is not synchronous in production', ! $production || config('queue.default') !== 'sync');
+        $this->check('Session cookies are secure in production', ! $production || config('session.secure'));
 
         $this->newLine();
         if ($this->failures > 0) {
