@@ -31,6 +31,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::middleware('admin')->group(function (): void {
         Route::get('/', AdminDashboardController::class)->name('dashboard');
         Route::get('/sellers', [AdminOperationsController::class, 'sellers'])->name('sellers');
+        Route::patch('/sellers/{business}', [AdminOperationsController::class, 'updateSeller'])->name('sellers.update');
         Route::get('/products', [AdminProductCatalogController::class, 'index'])->name('products');
         Route::get('/products/export', [AdminProductCatalogController::class, 'export'])->name('products.export');
         Route::post('/products/import', [AdminProductCatalogController::class, 'import'])->name('products.import');
@@ -43,11 +44,17 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::patch('/product-image-library/{asset}', [AdminProductImageLibraryController::class, 'update'])->name('image-library.update');
         Route::delete('/product-image-library/{asset}', [AdminProductImageLibraryController::class, 'destroy'])->name('image-library.destroy');
         Route::get('/orders', [AdminOperationsController::class, 'orders'])->name('orders');
+        Route::patch('/orders/{order}', [AdminOperationsController::class, 'updateOrder'])->name('orders.update');
+        Route::post('/orders/{order}/delivery', [AdminOperationsController::class, 'assignDelivery'])->name('orders.delivery');
         Route::get('/customers', [AdminOperationsController::class, 'customers'])->name('customers');
+        Route::patch('/customers/{customer}', [AdminOperationsController::class, 'updateCustomer'])->name('customers.update');
         Route::get('/delivery', [AdminOperationsController::class, 'delivery'])->name('delivery');
+        Route::patch('/delivery/{partner}', [AdminOperationsController::class, 'updateDelivery'])->name('delivery.update');
         Route::get('/settlements', [AdminOperationsController::class, 'settlements'])->name('settlements');
         Route::get('/support', [AdminOperationsController::class, 'support'])->name('support');
+        Route::patch('/support/{ticket}', [AdminOperationsController::class, 'updateSupport'])->name('support.update');
         Route::get('/content', [AdminOperationsController::class, 'content'])->name('content');
+        Route::patch('/content/{page}', [AdminOperationsController::class, 'updateContent'])->name('content.update');
         Route::post('/logout', [AdminAuthController::class, 'destroy'])->name('logout');
     });
 });
