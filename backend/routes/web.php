@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\OperationsController as AdminOperationsController;
 use App\Http\Controllers\Admin\ProductImageLibraryController as AdminProductImageLibraryController;
+use App\Http\Controllers\Admin\ProductCatalogController as AdminProductCatalogController;
 
 Route::get('/', [StorefrontController::class, 'home'])->name('home');
 Route::get('/shop', [StorefrontController::class, 'catalog'])->name('catalog');
@@ -30,7 +31,9 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::middleware('admin')->group(function (): void {
         Route::get('/', AdminDashboardController::class)->name('dashboard');
         Route::get('/sellers', [AdminOperationsController::class, 'sellers'])->name('sellers');
-        Route::get('/products', [AdminOperationsController::class, 'products'])->name('products');
+        Route::get('/products', [AdminProductCatalogController::class, 'index'])->name('products');
+        Route::post('/products/bulk-activate', [AdminProductCatalogController::class, 'bulkActivate'])->name('products.bulk-activate');
+        Route::patch('/products/{product}', [AdminProductCatalogController::class, 'update'])->name('products.update');
         Route::get('/product-image-library', [AdminProductImageLibraryController::class, 'index'])->name('image-library.index');
         Route::post('/product-image-library', [AdminProductImageLibraryController::class, 'store'])->name('image-library.store');
         Route::patch('/product-image-library/{asset}', [AdminProductImageLibraryController::class, 'update'])->name('image-library.update');
