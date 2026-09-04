@@ -6,6 +6,7 @@ use App\Enums\ApprovalStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Business;
 use App\Models\Category;
+use App\Models\CmsPage;
 use App\Models\Product;
 use App\Models\PromotionBanner;
 use Illuminate\Contracts\View\View;
@@ -44,6 +45,13 @@ class StorefrontController extends Controller
     {
         abort_unless($business->status === ApprovalStatus::Approved, 404);
         return view('storefront.business', ['business' => $business->load('outlets'), 'products' => $business->products()->where('is_active', true)->with('libraryImage')->paginate(24)]);
+    }
+
+    public function page(CmsPage $page): View
+    {
+        abort_unless($page->is_published, 404);
+
+        return view('storefront.page', compact('page'));
     }
 
     public function cart(): View
