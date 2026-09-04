@@ -2,7 +2,7 @@
 @section('title', 'Products & Catalogue')
 @section('content')
 <style>
-.catalog-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:18px}.catalog-stat{background:#fff;border:1px solid #e7e7e7;border-radius:12px;padding:16px}.catalog-stat strong{display:block;font-size:24px}.catalog-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.catalog-filters label{display:grid;gap:5px;font-size:12px;font-weight:700}.catalog-filters input,.catalog-filters select,.catalog-input{border:1px solid #d9d9d9;border-radius:8px;padding:9px;background:#fff}.catalog-input{width:100%;min-width:85px}.catalog-actions{display:flex;gap:8px;align-items:center}.catalog-image{width:52px;height:52px;object-fit:cover;border-radius:9px;background:#f3f3f3}.catalog-name{display:flex;gap:10px;align-items:center;min-width:220px}.catalog-name small{display:block;color:#777}.catalog-check{width:18px;height:18px}.catalog-save,.catalog-activate{border:0;border-radius:8px;padding:9px 12px;cursor:pointer;font-weight:700}.catalog-save{background:#172b4d;color:#fff}.catalog-activate{background:#159447;color:#fff}.catalog-muted{color:#777;font-size:12px}.catalog-error{background:#fff1f1;color:#9c1c1c;padding:12px;border-radius:8px;margin-bottom:14px}@media(max-width:800px){.catalog-stats{grid-template-columns:1fr}.catalog-filters{display:grid}.catalog-actions{align-items:stretch}.catalog-actions button{width:100%}}
+.catalog-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:18px}.catalog-stat{background:#fff;border:1px solid #e7e7e7;border-radius:12px;padding:16px}.catalog-stat strong{display:block;font-size:24px}.catalog-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.catalog-filters label{display:grid;gap:5px;font-size:12px;font-weight:700}.catalog-filters input,.catalog-filters select,.catalog-input{border:1px solid #d9d9d9;border-radius:8px;padding:9px;background:#fff}.catalog-input{width:100%;min-width:85px}.catalog-actions{display:flex;gap:8px;align-items:center}.catalog-image{width:52px;height:52px;object-fit:cover;border-radius:9px;background:#f3f3f3}.catalog-name{display:flex;gap:10px;align-items:center;min-width:220px}.catalog-name small{display:block;color:#777}.catalog-check{width:18px;height:18px}.catalog-save,.catalog-activate{border:0;border-radius:8px;padding:9px 12px;cursor:pointer;font-weight:700}.catalog-save{background:#172b4d;color:#fff}.catalog-activate{background:#159447;color:#fff}.catalog-muted{color:#777;font-size:12px}.catalog-tools{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.catalog-upload{display:grid;gap:5px;font-size:12px;font-weight:700}.catalog-warning{background:#fff8df;color:#765500;padding:12px;border-radius:8px;margin-bottom:14px}.catalog-error{background:#fff1f1;color:#9c1c1c;padding:12px;border-radius:8px;margin-bottom:14px}@media(max-width:800px){.catalog-stats{grid-template-columns:1fr}.catalog-filters{display:grid}.catalog-actions{align-items:stretch}.catalog-actions button{width:100%}}
 </style>
 
 <div class="page-title">
@@ -12,12 +12,29 @@
 @if($errors->any())
     <div class="catalog-error">{{ $errors->first() }}</div>
 @endif
+@if(session('warning'))
+    <div class="catalog-warning">{{ session('warning') }}</div>
+@endif
 
 <div class="catalog-stats">
     <div class="catalog-stat"><span>All products</span><strong>{{ $counts['all'] }}</strong></div>
     <div class="catalog-stat"><span>Active</span><strong>{{ $counts['active'] }}</strong></div>
     <div class="catalog-stat"><span>Drafts</span><strong>{{ $counts['draft'] }}</strong></div>
 </div>
+
+<section class="panel" style="margin-bottom:18px">
+    <div class="panel-head">
+        <div><h2>Bulk CSV update</h2><p>Export the template, update genuine commercial values, then import it safely.</p></div>
+        <div class="catalog-tools">
+            <a class="small-btn" href="{{ route('admin.products.export') }}">Download CSV</a>
+            <form method="post" action="{{ route('admin.products.import') }}" enctype="multipart/form-data" class="catalog-tools">
+                @csrf
+                <label class="catalog-upload">Catalog CSV<input type="file" name="catalog_csv" accept=".csv,text/csv" required></label>
+                <button class="catalog-save" type="submit">Import updates</button>
+            </form>
+        </div>
+    </div>
+</section>
 
 <section class="panel">
     <div class="panel-head">
