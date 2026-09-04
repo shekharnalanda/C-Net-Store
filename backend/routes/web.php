@@ -18,6 +18,9 @@ Route::redirect(
     '/app/android',
     'https://github.com/shekharnalanda/C-Net-Store/releases/latest/download/C-Net-Store-Customer.apk'
 )->name('app.android');
+Route::redirect('/app/customer', 'https://github.com/shekharnalanda/C-Net-Store/releases/latest/download/C-Net-Store-Customer.apk')->name('app.customer');
+Route::redirect('/app/seller', 'https://github.com/shekharnalanda/C-Net-Store/releases/latest/download/C-Net-Store-Seller.apk')->name('app.seller');
+Route::redirect('/app/delivery', 'https://github.com/shekharnalanda/C-Net-Store/releases/latest/download/C-Net-Store-Delivery-Partner.apk')->name('app.delivery');
 
 Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::middleware('guest')->group(function (): void {
