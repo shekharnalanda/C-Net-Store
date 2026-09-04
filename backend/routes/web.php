@@ -32,6 +32,8 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('/', AdminDashboardController::class)->name('dashboard');
         Route::get('/sellers', [AdminOperationsController::class, 'sellers'])->name('sellers');
         Route::get('/products', [AdminProductCatalogController::class, 'index'])->name('products');
+        Route::get('/products/export', [AdminProductCatalogController::class, 'export'])->name('products.export');
+        Route::post('/products/import', [AdminProductCatalogController::class, 'import'])->name('products.import');
         Route::post('/products/bulk-activate', [AdminProductCatalogController::class, 'bulkActivate'])->name('products.bulk-activate');
         Route::patch('/products/{product}', [AdminProductCatalogController::class, 'update'])->name('products.update');
         Route::get('/product-image-library', [AdminProductImageLibraryController::class, 'index'])->name('image-library.index');
