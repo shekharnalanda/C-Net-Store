@@ -8,6 +8,13 @@ class AdminProtectionTest extends TestCase
 {
     public function test_guest_cannot_open_admin_dashboard(): void { $this->get('/admin')->assertRedirect('/admin/login'); }
 
+    public function test_guest_cannot_open_operations_pages(): void
+    {
+        foreach (['/admin/sellers', '/admin/orders', '/admin/customers', '/admin/delivery', '/admin/settlements', '/admin/support', '/admin/content'] as $path) {
+            $this->get($path)->assertRedirect('/admin/login');
+        }
+    }
+
     public function test_guest_cannot_open_product_image_library(): void
     {
         $this->get('/admin/product-image-library')->assertRedirect('/admin/login');
