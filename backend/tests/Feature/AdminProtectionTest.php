@@ -15,6 +15,8 @@ class AdminProtectionTest extends TestCase
 
     public function test_guest_cannot_manage_product_catalog(): void
     {
+        $this->get('/admin/products/export')->assertRedirect('/admin/login');
+        $this->post('/admin/products/import')->assertRedirect('/admin/login');
         $this->post('/admin/products/bulk-activate', ['product_ids' => [1]])->assertRedirect('/admin/login');
     }
 
