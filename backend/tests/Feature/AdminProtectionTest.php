@@ -17,7 +17,9 @@ class AdminProtectionTest extends TestCase
     {
         $this->get('/admin/products/export')->assertRedirect('/admin/login');
         $this->post('/admin/products/import')->assertRedirect('/admin/login');
+        $this->post('/admin/products/activate-ready')->assertRedirect('/admin/login');
         $this->post('/admin/products/bulk-activate', ['product_ids' => [1]])->assertRedirect('/admin/login');
+        $this->post('/admin/products/bulk-deactivate', ['product_ids' => [1]])->assertRedirect('/admin/login');
     }
 
     public function test_guest_cannot_use_seller_product_image_library_api(): void
