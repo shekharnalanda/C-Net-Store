@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,6 +48,12 @@ class ProductCatalogController extends Controller
             'all' => Product::count(),
             'active' => Product::where('is_active', true)->count(),
             'draft' => Product::where('is_active', false)->count(),
+            'ready' => $this->readyDraftQuery()->count(),
+            'missing_price' => Product::where('is_active', false)->where('price', '<=', 0)->count(),
+            'missing_stock' => Product::where('is_active', false)->where('stock_quantity', '<=', 0)->count(),
+            'inventory_mismatch' => Product::where('stock_quantity', '>', 0)
+                ->whereDoesntHave('inventory', fn ($query) => $query->whereColumn('inventory.quantity', 'products.stock_quantity'))
+                ->count(),
         ];
 
         return view('admin.products.index', compact('products', 'categories', 'counts'));
@@ -186,6 +193,44 @@ class ProductCatalogController extends Controller
         });
 
         return back()->with('success', $product->name.' updated successfully.');
+    }
+
+
+    public function activateReady(): RedirectResponse
+    {
+        $readyIds = $this->readyDraftQuery()->pluck('id');
+        Product::whereIn('id', $readyIds)->update(['is_active' => true]);
+
+        return back()->with(
+            'success',
+            $readyIds->count().' fully prepared draft product(s) activated safely.'
+        );
+    }
+
+    public function bulkDeactivate(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'product_ids' => ['required', 'array', 'min:1', 'max:200'],
+            'product_ids.*' => ['integer', 'distinct', 'exists:products,id'],
+        ]);
+
+        $deactivated = Product::whereIn('id', $data['product_ids'])
+            ->where('is_active', true)
+            ->update(['is_active' => false]);
+
+        return back()->with('success', $deactivated.' selected product(s) moved to draft.');
+    }
+
+    private function readyDraftQuery(): Builder
+    {
+        return Product::query()
+            ->where('is_active', false)
+            ->where('price', '>', 0)
+            ->where('stock_quantity', '>', 0)
+            ->whereHas('inventory', function ($query): void {
+                $query->where('quantity', '>', 0)
+                    ->whereColumn('inventory.quantity', 'products.stock_quantity');
+            });
     }
 
     private function syncInventory(Product $product, int $quantity): void
