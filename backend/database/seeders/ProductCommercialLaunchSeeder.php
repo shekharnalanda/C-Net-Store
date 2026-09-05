@@ -82,6 +82,10 @@ class ProductCommercialLaunchSeeder extends Seeder
                     $price = $prices[$index];
                     $stock = $stockMap[$group][$index] ?? 25;
                     $foodGroup = in_array($group, ['Food', 'Bihar Foods'], true);
+                    $unit = $this->unitFor($asset->name, $group);
+                    $isVegetarian = $foodGroup
+                        ? ! str_contains(strtolower($asset->name), 'chicken')
+                        : null;
                     $taxRate = match ($group) {
                         'Food', 'Bihar Foods', 'Fruits & Vegetables', 'Grocery' => 5,
                         'Electronics', 'Home Appliances', 'Mobile Accessories' => 18,
@@ -89,13 +93,14 @@ class ProductCommercialLaunchSeeder extends Seeder
                     };
 
                     DB::table('products')->where('id', $product->id)->update([
-                        'description' => $asset->name.' available from C-Net Store. Final brand, size and specifications are shown at order confirmation.',
+                        'description' => $asset->name." available from C-Net Store. Price is per {$unit}. Final brand, size and specifications are shown at order confirmation.",
                         'price' => $price,
                         'sale_price' => null,
                         'tax_rate' => $taxRate,
                         'stock_quantity' => $stock,
-                        'unit' => $foodGroup ? 'plate' : 'piece',
+                        'unit' => $unit,
                         'preparation_minutes' => $foodGroup ? 30 : null,
+                        'is_vegetarian' => $isVegetarian,
                         'is_active' => true,
                         'updated_at' => now(),
                     ]);
@@ -113,4 +118,76 @@ class ProductCommercialLaunchSeeder extends Seeder
 
         $this->command?->info("COMMERCIAL_PRODUCTS_PUBLISHED={$updated}");
     }
+
+    private function unitFor(string $name, string $group): string
+    {
+        $key = strtolower($name);
+
+        if ($group === 'Food') {
+            return 'plate';
+        }
+
+        if ($group === 'Fruits & Vegetables') {
+            return 'kg';
+        }
+
+        $exactUnits = [
+            'basmati rice' => 'kg',
+            'wheat flour' => 'kg',
+            'toor dal' => 'kg',
+            'sugar' => 'kg',
+            'sattu' => 'kg',
+            'cooking oil' => 'litre',
+            'cement bag' => 'bag',
+            'fertilizer bag' => 'bag',
+            'animal feed sack' => 'sack',
+            'irrigation pipe roll' => 'roll',
+            'steel rebar bundle' => 'bundle',
+            'ceramic floor tiles' => 'box',
+            'pvc plumbing pipes' => 'piece',
+            'red bricks' => 'piece',
+            'concrete blocks' => 'piece',
+            'bhagalpuri silk fabric' => 'metre',
+            'engine oil bottle' => 'bottle',
+            'hair oil' => 'bottle',
+            'shampoo' => 'bottle',
+            'face cream' => 'jar',
+            'floor cleaning liquid' => 'bottle',
+            'dishwashing liquid' => 'bottle',
+            'detergent powder' => 'pack',
+            'indian spices' => 'pack',
+            'vitamin supplements' => 'bottle',
+            'protective face masks' => 'pack',
+            'gauze bandage roll' => 'roll',
+            'hot water bag' => 'piece',
+            'pet food bowl' => 'piece',
+            'dog collar and leash' => 'set',
+            'cat litter tray' => 'piece',
+            'incense sticks and holder' => 'set',
+            'cotton diya wicks' => 'pack',
+            'silao khaja' => 'box',
+            'thekua' => 'pack',
+            'makhana' => 'pack',
+            'tilkut' => 'box',
+        ];
+
+        if (isset($exactUnits[$key])) {
+            return $exactUnits[$key];
+        }
+
+        foreach (['set', 'kit', 'supplies', 'containers', 'folders', 'blocks'] as $needle) {
+            if (str_contains($key, $needle)) {
+                return 'set';
+            }
+        }
+
+        foreach (['notebook', 'sticks', 'powder', 'spices'] as $needle) {
+            if (str_contains($key, $needle)) {
+                return 'pack';
+            }
+        }
+
+        return 'piece';
+    }
+
 }
