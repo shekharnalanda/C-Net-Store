@@ -96,7 +96,7 @@ class LaunchWorkflowTest extends TestCase
     {
         $fixture = $this->commerceFixture();
         $order = $this->order($fixture, OrderStatus::ReadyForPickup);
-        $admin = $this->user('Admin User', '9000000003', 'admin');
+        $admin = $this->user('Admin User', '9000000003', 'super_admin');
         $deliveryUser = $this->user('Delivery User', '9000000004', 'delivery_partner');
         $partner = DeliveryPartner::query()->create([
             'user_id' => $deliveryUser->id,
