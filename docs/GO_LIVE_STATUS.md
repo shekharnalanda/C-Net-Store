@@ -23,12 +23,15 @@ The smoke audit covers the public storefront, catalogue API, policy pages, admin
 - Customer, seller and delivery Android APK distribution: ready
 - Legal and marketplace policy pages: published
 - GitHub Backend CI and Final Release Audit: required to pass on every main-branch change
+- Generated `CNET-CATALOG-*` products are image-library drafts only. They are
+  forced inactive with zero price/stock until genuine seller data is entered.
 
 ## Business activation remaining
 
 These are operational inputs, not unfinished application code:
 
-1. Enter genuine product prices and stock using the admin CSV workflow.
+1. Enter genuine product prices and stock using the admin CSV workflow. Demo
+   image-library drafts must not be treated as saleable products.
 2. Activate only catalogue items marked Ready to publish.
 3. Perform one authorised low-value Razorpay transaction and refund/cancellation drill.
 4. Complete one real customer-to-seller-to-delivery order using the three apps.

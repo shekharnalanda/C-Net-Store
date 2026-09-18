@@ -1,23 +1,17 @@
 <?php
 
-namespace Database\Seeders;
-
-use Illuminate\Database\Seeder;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ProductCommercialLaunchSeeder extends Seeder
+return new class extends Migration
 {
-    public function run(): void
+    public function up(): void
     {
-        // Image-library catalogue rows are templates, not seller-confirmed
-        // commercial products. Never publish guessed prices or stock.
         $productIds = DB::table('products')
             ->where('sku', 'like', 'CNET-CATALOG-%')
             ->pluck('id');
 
         if ($productIds->isEmpty()) {
-            $this->command?->info('DEMO_CATALOG_PRODUCTS_DEACTIVATED=0');
-
             return;
         }
 
@@ -40,7 +34,11 @@ class ProductCommercialLaunchSeeder extends Seeder
                     'updated_at' => now(),
                 ]);
         });
-
-        $this->command?->warn('DEMO_CATALOG_PRODUCTS_DEACTIVATED='.$productIds->count());
     }
-}
+
+    public function down(): void
+    {
+        // Deliberately irreversible: demo prices and stock must never be
+        // restored to the public marketplace automatically.
+    }
+};
