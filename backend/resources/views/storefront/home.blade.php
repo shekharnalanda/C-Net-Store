@@ -1,8 +1,8 @@
 @extends('layouts.storefront')
 @section('content')
 <!-- Homepage tile likes and views; comments are intentionally not enabled. -->
-<link rel="stylesheet" href="/tile-engagement.css?v=20261106-1">
-<script src="/tile-engagement.js?v=20261106-1" data-endpoint="/tile-engagement.php" data-tiles=".product-card,.store-card,.services>.service,.category-grid>a,.offer-row>.offer" defer></script>
+<link rel="stylesheet" href="/tile-engagement.css?v=20261106-2">
+<script src="/tile-engagement.js?v=20261106-2" data-endpoint="/tile-engagement.php" data-tiles=".product-card,.store-card,.services>.service,.category-grid>a,.offer-row>.offer" defer></script>
 
 <section class="hero"><div class="container hero-grid"><div><span class="eyebrow">Bihar Sharif's local marketplace</span><h1>Everything you need,<br><em>delivered locally.</em></h1><p>Shop trusted local stores, order daily groceries and enjoy restaurant food—all in one C-Net Store.</p><div class="hero-buttons"><a class="btn primary" href="{{ route('catalog') }}">Start Shopping</a><a class="btn secondary" href="{{ route('catalog', ['type' => 'food']) }}">Order Food</a><a class="btn app-install" href="#mobile-app">📱 Mobile App Install करें</a></div><div class="trust"><span>✓ Online payments</span><span>✓ Trusted sellers</span><span>✓ Local delivery</span></div></div><div class="hero-art"><img src="{{ asset('images/cnet-store-logo.png') }}" alt="C-Net Store"><div class="floating one">🛍️ Shopping</div><div class="floating two">🥬 Grocery</div><div class="floating three">🍛 Food</div></div></div></section>
 
