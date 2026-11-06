@@ -1,5 +1,9 @@
 @extends('layouts.storefront')
 @section('content')
+<!-- Homepage tile likes and views; comments are intentionally not enabled. -->
+<link rel="stylesheet" href="/tile-engagement.css?v=20261106-1">
+<script src="/tile-engagement.js?v=20261106-1" data-endpoint="/tile-engagement.php" data-tiles=".product-card,.store-card,.services>.service,.category-grid>a,.offer-row>.offer" defer></script>
+
 <section class="hero"><div class="container hero-grid"><div><span class="eyebrow">Bihar Sharif's local marketplace</span><h1>Everything you need,<br><em>delivered locally.</em></h1><p>Shop trusted local stores, order daily groceries and enjoy restaurant food—all in one C-Net Store.</p><div class="hero-buttons"><a class="btn primary" href="{{ route('catalog') }}">Start Shopping</a><a class="btn secondary" href="{{ route('catalog', ['type' => 'food']) }}">Order Food</a><a class="btn app-install" href="#mobile-app">📱 Mobile App Install करें</a></div><div class="trust"><span>✓ Online payments</span><span>✓ Trusted sellers</span><span>✓ Local delivery</span></div></div><div class="hero-art"><img src="{{ asset('images/cnet-store-logo.png') }}" alt="C-Net Store"><div class="floating one">🛍️ Shopping</div><div class="floating two">🥬 Grocery</div><div class="floating three">🍛 Food</div></div></div></section>
 
 <section class="container services"><a class="service blue" href="{{ route('catalog', ['type' => 'shopping']) }}"><span>🛍️</span><div><h2>Shopping</h2><p>Products from local stores</p></div><b>→</b></a><a class="service green" href="{{ route('catalog', ['type' => 'grocery']) }}"><span>🥦</span><div><h2>Grocery</h2><p>Fresh daily essentials</p></div><b>→</b></a><a class="service orange" href="{{ route('catalog', ['type' => 'food']) }}"><span>🍽️</span><div><h2>Food Delivery</h2><p>Restaurants near you</p></div><b>→</b></a></section>
@@ -14,3 +18,4 @@
 
 <section class="app-promo" id="mobile-app"><div class="container"><div class="app-copy"><span class="eyebrow">All Android Beta Apps Available</span><h2>C-Net Store apps डाउनलोड करें</h2><p>एक button से अपनी भूमिका के अनुसार official Android app चुनें।</p><details class="app-download-menu"><summary>📱 Mobile App Download <span>⌄</span></summary><div class="app-download-options"><a href="{{ route('app.customer') }}"><b>🛍️ Customer / General App</b><small>Shopping, grocery और food order करें</small></a><a href="{{ route('app.seller') }}"><b>🏪 Seller App</b><small>Products, inventory और orders manage करें</small></a><a href="{{ route('app.delivery') }}"><b>🛵 Delivery Partner App</b><small>Assignments और earnings देखें</small></a></div></details><small>Google Play पर आने तक APK official GitHub release से install होंगे। Android में “Install unknown apps” की अनुमति देनी पड़ सकती है।</small></div><img src="{{ asset('images/cnet-store-logo.png') }}" alt="C-Net Store Android Apps"></div></section>
 @endsection
+
